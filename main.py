@@ -7,9 +7,7 @@ network = []
 gradient = []
 
 
-def train(x, y):
-    n = len(network)
-    # forward propagation
+def forward_propagation(n, x):
     for i in range(n):
         if i == 0:
             network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
@@ -20,18 +18,50 @@ def train(x, y):
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
         else:
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
+
+
+def backward_propagation(n, x, y, clean=False):
+    if clean:
+        gradient[n - 1]['h'] = output_grad(network[n - 1]['h'], y)
+        gradient[n - 1]['a'] = last_grad(network[n - 1]['a'], y)
+        for i in range(n - 2, 0, -1):
+            gradient[i]['h'] = h_grad(network=network, gradient=gradient, layer=i)
+            gradient[i]['a'] = a_grad(network=network, gradient=gradient, layer=i)
+        for i in range(n - 1, 0, -1):
+            gradient[i]['weight'] = w_grad(network=network, gradient=gradient, layer=i, x=x)
+            gradient[i]['bias'] = gradient[i]['a']
+    else:
+
+        gradient[n - 1]['h'] += output_grad(network[n - 1]['h'], y)
+        gradient[n - 1]['a'] += last_grad(network[n - 1]['a'], y)
+        for i in range(n - 2, 0, -1):
+            gradient[i]['h'] += h_grad(network=network, gradient=gradient, layer=i)
+            gradient[i]['a'] += a_grad(network=network, gradient=gradient, layer=i)
+        for i in range(n - 1, 0, -1):
+            gradient[i]['weight'] += w_grad(network=network, gradient=gradient, layer=i, x=x)
+            gradient[i]['bias'] += gradient[i]['a']
+
+def descent(eta,layers,number_of_data_points):
+    for i in range(layers):
+        network[i]['weight'] -= (eta/float(number_of_data_points))*gradient[i]['weight']
+        network[i]['bias'] -= (eta / float(number_of_data_points)) * gradient[i]['bias']
+def train(x, y):
+    n = len(network)
+    # forward propagation
+    forward_propagation(n, x)
     loss = -1 * np.log(network[n - 1]['h'][y])
     # forward propagation ends
     print(loss)
     # backpropagation starts
-    gradient[n - 1]['h'] = output_grad(network[n - 1]['h'], y)
-    gradient[n - 1]['a'] = last_grad(network[n - 1]['a'], y)
-    for i in range(n - 2, 0, -1):
-        gradient[i]['h'] = h_grad(network=network, gradient=gradient, layer=i)
-        gradient[i]['a'] = a_grad(network=network, gradient=gradient, layer=i)
-    for i in range(n - 1, 0, -1):
-        gradient[i]['weight'] = w_grad(network=network, gradient=gradient, layer=i, x=x)
-        gradient[i]['bias'] = gradient[i]['a']
+    backward_propagation(n, x, y, clean=True)
+    descent(eta=.6,layers=n,number_of_data_points=1)
+
+    forward_propagation(n, x)
+    loss = -1 * np.log(network[n - 1]['h'][y])
+    # forward propagation ends
+    print(loss)
+    # backpropagation starts
+    backward_propagation(n, x, y, clean=True)
     # back propagation ends
 
 
