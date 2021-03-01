@@ -10,7 +10,6 @@ from activation import *
     Number of Testing Images = 10000 """
 (trainX, trainy), (testX, testy) = fashion_mnist.load_data()
 
-
 last = 2
 network = []
 gradient = []
