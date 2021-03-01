@@ -13,9 +13,9 @@ t = 0
 def forward_propagation(n, x):
     for i in range(n):
         if i == 0:
-            network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
+            network[i]['h'] = network[i]['weight'] @ x + network[i]['bias']
         else:
-            network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
+            network[i]['h'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
 
         if i == n - 1:
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
