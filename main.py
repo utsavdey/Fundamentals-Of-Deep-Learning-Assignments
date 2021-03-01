@@ -7,7 +7,8 @@ from activation import *
 last = 2
 network = []
 gradient = []
-t=0
+t = 0
+
 
 def forward_propagation(n, x):
     for i in range(n):
@@ -17,7 +18,9 @@ def forward_propagation(n, x):
             network[i]['h'] = network[i]['weight'] @ network[i - 1]['a'] + network[i]['bias']
 
         if i == n - 1:
+            print(network[i]['a'])
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
+            print(network[i]['h'])
         else:
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
 
@@ -39,7 +42,7 @@ def backward_propagation(n, x, y, clean=False):
         for i in range(n - 2, 0, -1):
             gradient[i]['h'] += h_grad(network=network, gradient=gradient, layer=i)
             gradient[i]['a'] += a_grad(network=network, gradient=gradient, layer=i)
-            gradient[i]['a']=gradient[i]['a']/np.linalg.norm(gradient[i]['a'])
+            gradient[i]['a'] = gradient[i]['a'] / np.linalg.norm(gradient[i]['a'])
         for i in range(n - 1, 0, -1):
             gradient[i]['weight'] += w_grad(network=network, gradient=gradient, layer=i, x=x)
             gradient[i]['bias'] += gradient[i]['a']
@@ -51,16 +54,17 @@ def descent(eta, layers, number_of_data_points):
         network[i]['bias'] -= (eta / float(number_of_data_points)) * gradient[i]['bias']
 
 
-def train(datapoints, epochs, labels,f):
+def train(datapoints, epochs, labels, f):
     n = len(network)  # number of layers
-    #f = len(datapoints[0])  # number of features
-    d = len(datapoints)  # number of data points
+    # f = len(datapoints[0])  # number of features
+    d = len(datapoints)
     # forward propagation
+    print(datapoints[0].shape)
     for i in range(epochs):
         clean = True
-        for (data, label) in zip(datapoints, labels):
-            x = testX[0].reshape(784, 1)/255.0  # creating a single data vector
-            y = label
+        for i in range(d):
+            x = datapoints[i].reshape(784, 1) / 255.0  # creating a single data vector
+            y = labels[i]
             forward_propagation(n, x)
             clean = False
             # backpropagation starts
@@ -72,9 +76,7 @@ def train(datapoints, epochs, labels,f):
         # forward propagation ends
 
 
-
-
-def master(layers, neuron_each_layer, epochs,k, x, y):
+def master(layers, neuron_each_layer, epochs, k, x, y):
     n = neuron_each_layer
     n_features = 784
     for i in range(layers):  # making basic structure
@@ -82,22 +84,24 @@ def master(layers, neuron_each_layer, epochs,k, x, y):
 
         if i == 0:  # Weight matrix depends on number of features in the first layer
             layer['weight'] = np.random.normal(size=(n, n_features))
-            glorot=n_features
+            glorot = n_features
         elif i == layers - 1:  # special handling for the last layer.
             n = k
             layer['weight'] = np.random.normal(size=(n, neuron_each_layer))
-            glorot=neuron_each_layer
+            glorot = neuron_each_layer
         else:
             layer['weight'] = np.random.normal(size=(n, n))
-            glorot=n
-        layer['weight']= layer['weight'] * math.sqrt(1/float(glorot)) #glorot inittialization. Vanishing and exploding gradient.
+            glorot = n
+        layer['weight'] = layer['weight'] * math.sqrt(
+            1 / float(glorot))  # glorot inittialization. Vanishing and exploding gradient.
         layer['bias'] = np.random.rand(n, 1)
-        layer['bias']= layer['bias']
         layer['h'] = np.ones((n, 1))
         layer['a'] = np.ones((n, 1))
         network.append(layer)
     global gradient
     gradient = copy.deepcopy(network)  # structure copy
-    train(datapoints=x, labels=y, epochs=epochs,f=n_features)
+    train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
-master(layers=3, neuron_each_layer=3,epochs=6, k=10, x=testX[1:1000], y=trainy[1:1000])
+
+master(layers=3, neuron_each_layer=3, epochs=6, k=10, x=trainX, y=trainy)
+
