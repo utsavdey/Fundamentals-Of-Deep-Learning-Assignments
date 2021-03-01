@@ -15,10 +15,12 @@ def forward_propagation(n, x):
         if i == 0:
             network[i]['h'] = network[i]['weight'] @ x + network[i]['bias']
         else:
-            network[i]['h'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
+            network[i]['h'] = network[i]['weight'] @ network[i - 1]['a'] + network[i]['bias']
 
         if i == n - 1:
+            print(network[i]['a'])
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
+            print(network[i]['h'])
         else:
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
 
@@ -55,24 +57,26 @@ def descent(eta, layers, number_of_data_points):
 def train(datapoints, epochs, labels, f):
     n = len(network)  # number of layers
     # f = len(datapoints[0])  # number of features
-    d = len(datapoints)  # number of data points
+    d = len(datapoints)
     # forward propagation
+    print(datapoints[0].shape)
     for i in range(epochs):
         clean = True
-        for (data, label) in zip(datapoints, labels):
-            x = testX[0].reshape(784, 1) / 255.0  # creating a single data vector
-            y = label
+        for i in range(d):
+            x = datapoints[i].reshape(784, 1) / 255.0  # creating a single data vector
+            y = labels[i]
             forward_propagation(n, x)
-
-            # backpropagation starts
-            backward_propagation(n, x, y, clean=clean)
             clean = False
-            descent(eta=.00000000000001, layers=n, number_of_data_points=d)
+            # backpropagation starts
+        backward_propagation(n, x, y, clean=clean)
+        descent(eta=.01, layers=n, number_of_data_points=d)
+        print(network)
         loss = -1 * np.log(network[n - 1]['h'][y])
+
         # forward propagation ends
 
 
-def master(layers, neuron_each_layer, k, x, y):
+def master(layers, neuron_each_layer, epochs, k, x, y):
     n = neuron_each_layer
     n_features = 784
     for i in range(layers):  # making basic structure
@@ -91,13 +95,13 @@ def master(layers, neuron_each_layer, k, x, y):
         layer['weight'] = layer['weight'] * math.sqrt(
             1 / float(glorot))  # glorot inittialization. Vanishing and exploding gradient.
         layer['bias'] = np.random.rand(n, 1)
-        layer['bias'] = layer['bias']
         layer['h'] = np.ones((n, 1))
         layer['a'] = np.ones((n, 1))
         network.append(layer)
     global gradient
     gradient = copy.deepcopy(network)  # structure copy
-    train(datapoints=x, labels=y, epochs=2, f=n_features)
+    train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neuron_each_layer=3, k=10, x=testX, y=trainy)
+master(layers=3, neuron_each_layer=3, epochs=6, k=10, x=trainX, y=trainy)
+
