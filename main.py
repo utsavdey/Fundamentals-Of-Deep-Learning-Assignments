@@ -11,6 +11,7 @@ from activation import *
 (trainX, trainy), (testX, testy) = fashion_mnist.load_data()
 
 last = 2
+#network is a list of all the learning parameters in every layer and gradient is its copy
 network = []
 gradient = []
 t = 0
@@ -19,16 +20,21 @@ t = 0
 def forward_propagation(n, x):
     for i in range(n):
         if i == 0:
-            network[i]['h'] = network[i]['weight'] @ x + network[i]['bias']
+            print("Layer "+str(i)+"\n Before Pre-Activation: "+str(network[i]['a']))
+            network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
+            print("After Pre-Activation: " + str(network[i]['a']))
         else:
-            network[i]['h'] = network[i]['weight'] @ network[i - 1]['a'] + network[i]['bias']
-
+            print("Layer " + str(i) + "\n Before Pre-Activation: " + str(network[i]['a']))
+            network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
+            print("After Pre-Activation: " + str(network[i]['a']))
         if i == n - 1:
-            print(network[i]['a'])
+            print("Last Layer: Before Activation: "+str(network[i]['h']))
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
-            print(network[i]['h'])
+            print("Last layer: After Activation: "+str(network[i]['h']))
         else:
+            print("Layer "+str(i)+"\n Before Activation: " + str(network[i]['h']))
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
+            print("After Activation: " + str(network[i]['h']))
 
 
 def backward_propagation(n, x, y, clean=False):
@@ -65,13 +71,17 @@ def train(datapoints, epochs, labels, f):
     # f = len(datapoints[0])  # number of features
     d = len(datapoints)  # number of data points
     # forward propagation
-    print(datapoints[0].shape)
+    #print(datapoints[0].shape)
     for i in range(epochs):
         clean = True
-        for i in range(d):
-            x = datapoints[i].reshape(784, 1) / 255.0  # creating a single data vector
-            y = labels[i]
+        for j in range(3):#TO-DO change 3 to d
+            print("Processing datapoint :"+str(i))
+            # creating a single data vector and normalising color values between 0 to 1
+            x = datapoints[j].reshape(784, 1) / 255.0
+            y = labels[j]
             forward_propagation(n, x)
+            #TO-DO::Remove below statement
+            #exit()
             clean = False
             # backpropagation starts
         backward_propagation(n, x, y, clean=clean)
@@ -81,17 +91,18 @@ def train(datapoints, epochs, labels, f):
 
         # forward propagation ends
 
-
+"""master() is used to intialise all the learning parameters 
+   in every layer and then start the training process"""
 def master(layers, neurons_in_each_layer, epochs, k, x, y):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
-           as dataset consists of 28x28 pixel grayscale images """
+       since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
 
     for i in range(layers):  # making basic structure
-
-        layer = {} #Initialize an Empty Dictionary: layer
+        # Initialize an Empty Dictionary called layer
+        layer = {}
 
         if i == 0:  # Weight matrix depends on number of features in the first layer
             layer['weight'] = np.random.normal(size=(n, n_features))
@@ -102,16 +113,24 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
             layer['weight'] = np.random.normal(size=(n, neurons_in_each_layer))
             glorot = neurons_in_each_layer
         else:
-            layer['weight'] = np.random.normal(size=(n, n)) # Assuming the number of neurons in every hidden layer is the same
+            # Assuming the number of neurons in every hidden layer is the same
+            layer['weight'] = np.random.normal(size=(n, n))
             glorot = n
-        layer['weight'] = layer['weight'] * math.sqrt(
-            1 / float(glorot))  # glorot inittialization. Vanishing and exploding gradient.
-        layer['bias'] = np.random.rand(n, 1) #initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
-        layer['h'] = np.ones((n, 1)) #initialises a 1-D array of size n and type float with element having valuue as 1.
+        # glorot inittialization. Vanishing and exploding gradient.
+        layer['weight'] = layer['weight'] * math.sqrt(1 / float(glorot))
+        # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
+        layer['bias'] = np.random.rand(n, 1)
+        # initialises a 2-D array of size [n*1] and type float with element having value as 1.
+        layer['h'] = np.ones((n, 1))
         layer['a'] = np.ones((n, 1))
         network.append(layer)
+        print("Layer " + str(i) + "\n Weights " + str(layer['weight']) + "\n Bias " + str(
+            layer['bias']) + "\n Post Activation: " + str(layer['h']) + "\n Pre Activation: " + str(layer['a']))
     global gradient
-    gradient = copy.deepcopy(network)  # structure copy. The changes made to a copy of network will not reflect in the original network.
+    """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
+    gradient = copy.deepcopy(network)
+    print("\n\n***Gradient***\n")
+    print(str(gradient[0]['weight'])+"\n ----------")
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
