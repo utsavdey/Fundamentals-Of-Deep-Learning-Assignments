@@ -5,6 +5,7 @@ import copy
 from keras.datasets import fashion_mnist
 from grad import *
 from activation import *
+
 """ get training and testing vectors
     Number of Training Images = 60000
     Number of Testing Images = 10000 """
@@ -65,6 +66,7 @@ def descent(eta, layers, number_of_data_points):
         network[i]['weight'] -= (eta / float(number_of_data_points)) * gradient[i]['weight']
         network[i]['bias'] -= (eta / float(number_of_data_points)) * gradient[i]['bias']
 
+
 # 1 epoch = 1 pass over the data
 def train(datapoints, epochs, labels, f):
     n = len(network)  # number of layers
@@ -100,16 +102,19 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
 
-    for i in range(layers):  # making basic structure
-        # Initialize an Empty Dictionary called layer
+    for i in range(layers):
+        # Initialize an Empty Dictionary: layer
         layer = {}
 
-        if i == 0:  # Weight matrix depends on number of features in the first layer
+        if i == 0:
+            # Weight matrix depends on number of features in the first layer
             layer['weight'] = np.random.normal(size=(n, n_features))
             glorot = n_features
-        elif i == layers - 1:  # special handling for the last layer.
+        elif i == layers - 1:
+            # special handling for the last layer.
             n = k
-            # Create an array of size [number of classes * neurons last hidden layer] and fill it with random values from a Gaussian Distribution having 0 mean and 1 S.D.
+            # Create an array of size [number of classes * neurons last hidden layer] and fill it with random values
+            # from a Gaussian Distribution having 0 mean and 1 S.D.
             layer['weight'] = np.random.normal(size=(n, neurons_in_each_layer))
             glorot = neurons_in_each_layer
         else:
@@ -134,5 +139,4 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX, y=trainy)
-
+master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX[1:10], y=trainy[1:10])
