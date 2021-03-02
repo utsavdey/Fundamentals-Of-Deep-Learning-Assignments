@@ -92,11 +92,14 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
            as dataset consists of 28x28 pixel grayscale images """
     n_features = 784
 
-    for i in range(layers):  # making basic structure
+    for i in range(layers):
+        # making basic structure
 
-        layer = {}  # Initialize an Empty Dictionary: layer
+        layer = {}
+        # Initialize an Empty Dictionary: layer
 
-        if i == 0:  # Weight matrix depends on number of features in the first layer
+        if i == 0:
+            # Weight matrix depends on number of features in the first layer
             layer['weight'] = np.random.normal(size=(n, n_features))
             glorot = n_features
         elif i == layers - 1:
@@ -125,4 +128,4 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX, y=trainy)
+master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX[1:10], y=trainy[1:10])
