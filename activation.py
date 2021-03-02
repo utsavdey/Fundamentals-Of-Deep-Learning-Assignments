@@ -11,9 +11,9 @@ def sigmoid(x):
 
 
 def softmax(x):
-    x = np.exp(x)
-    x = x / np.sum(x)
-    return x
+    exp_x = np.exp(x)
+    probability_vector = exp_x / np.sum(exp_x)
+    return probability_vector
 
 
 def activation_function(a, _activate_func_callback):
