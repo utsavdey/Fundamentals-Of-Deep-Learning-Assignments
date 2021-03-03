@@ -21,21 +21,13 @@ t = 0
 def forward_propagation(n, x):
     for i in range(n):
         if i == 0:
-            print("Layer "+str(i)+"\n Before Pre-Activation: "+str(network[i]['a']))
             network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
-            print("After Pre-Activation: " + str(network[i]['a']))
         else:
-            print("Layer " + str(i) + "\n Before Pre-Activation: " + str(network[i]['a']))
             network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
-            print("After Pre-Activation: " + str(network[i]['a']))
         if i == n - 1:
-            print("Last Layer: Before Activation: "+str(network[i]['h']))
             network[i]['h'] = activation_function(network[i]['a'], softmax)  # last layer
-            print("Last layer: After Activation: "+str(network[i]['h']))
         else:
-            print("Layer "+str(i)+"\n Before Activation: " + str(network[i]['h']))
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
-            print("After Activation: " + str(network[i]['h']))
 
 
 def backward_propagation(n, x, y, clean=False):
@@ -73,22 +65,17 @@ def train(datapoints, epochs, labels, f):
     # f = len(datapoints[0])  # number of features
     d = len(datapoints)  # number of data points
     # forward propagation
-    #print(datapoints[0].shape)
     for i in range(epochs):
         clean = True
-        for j in range(3):#TO-DO change 3 to d
-            print("Processing datapoint :"+str(i))
+        for j in range(d):
             # creating a single data vector and normalising color values between 0 to 1
             x = datapoints[j].reshape(784, 1) / 255.0
             y = labels[j]
             forward_propagation(n, x)
-            #TO-DO::Remove below statement
-            #exit()
             clean = False
             # backpropagation starts
         backward_propagation(n, x, y, clean=clean)
         descent(eta=.01, layers=n, number_of_data_points=d)
-        print(network)
         loss = -1 * np.log(network[n - 1]['h'][y])
 
         # forward propagation ends
@@ -113,8 +100,8 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
         elif i == layers - 1:
             # special handling for the last layer.
             n = k
-            # Create an array of size [number of classes * neurons last hidden layer] and fill it with random values
-            # from a Gaussian Distribution having 0 mean and 1 S.D.
+            """Create an array of size [number of classes * neurons last hidden layer] and fill it with random values
+               from a Gaussian Distribution having 0 mean and 1 S.D."""
             layer['weight'] = np.random.normal(size=(n, neurons_in_each_layer))
             glorot = neurons_in_each_layer
         else:
@@ -129,13 +116,9 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
         layer['h'] = np.ones((n, 1))
         layer['a'] = np.ones((n, 1))
         network.append(layer)
-        print("Layer " + str(i) + "\n Weights " + str(layer['weight']) + "\n Bias " + str(
-            layer['bias']) + "\n Post Activation: " + str(layer['h']) + "\n Pre Activation: " + str(layer['a']))
     global gradient
     """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
     gradient = copy.deepcopy(network)
-    print("\n\n***Gradient***\n")
-    print(str(gradient[0]['weight'])+"\n ----------")
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
