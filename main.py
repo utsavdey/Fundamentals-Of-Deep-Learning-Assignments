@@ -82,9 +82,9 @@ def train(datapoints, epochs, labels, f):
             x = datapoints[j].reshape(784, 1) / 255.0
             y = labels[j]
             forward_propagation(n, x)
+            backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
             clean = False
-            # backpropagation starts
-        backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
+
         descent(eta=.01, layers=n, number_of_data_points=d)
         loss = -1 * np.log(network[n - 1]['h'][y])
 
@@ -137,3 +137,4 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
 
 
 master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX[1:10], y=trainy[1:10])
+
