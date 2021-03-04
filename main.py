@@ -12,10 +12,11 @@ from activation import *
 (trainX, trainy), (testX, testy) = fashion_mnist.load_data()
 
 last = 2
-#network is a list of all the learning parameters in every layer and gradient is its copy
+# network is a list of all the learning parameters in every layer and gradient is its copy
 network = []
 gradient = []
-t = 0
+# store gradient w.r.t a single datapoint
+transient_gradient = []
 
 
 def forward_propagation(n, x):
@@ -30,27 +31,36 @@ def forward_propagation(n, x):
             network[i]['h'] = activation_function(network[i]['a'], sigmoid)
 
 
-def backward_propagation(n, x, y, clean=False):
+def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
+    transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y)
+    transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['a'], y)
+    for i in range(number_of_layers - 2, 0, -1):
+        transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
+        transient_gradient[i]['a'] = a_grad(network=network, transient_gradient=transient_gradient, layer=i)
+    for i in range(number_of_layers - 1, 0, -1):
+        transient_gradient[i]['weight'] = w_grad(network=network, transient_gradient=transient_gradient, layer=i, x=x)
+        transient_gradient[i]['bias'] = gradient[i]['a']
     if clean:
-        gradient[n - 1]['h'] = output_grad(network[n - 1]['h'], y)
-        gradient[n - 1]['a'] = last_grad(network[n - 1]['a'], y)
-        for i in range(n - 2, 0, -1):
-            gradient[i]['h'] = h_grad(network=network, gradient=gradient, layer=i)
-            gradient[i]['a'] = a_grad(network=network, gradient=gradient, layer=i)
-        for i in range(n - 1, 0, -1):
-            gradient[i]['weight'] = w_grad(network=network, gradient=gradient, layer=i, x=x)
-            gradient[i]['bias'] = gradient[i]['a']
+        gradient[number_of_layers - 1]['h'] = transient_gradient[number_of_layers - 1]['h'] / float(number_of_datapoint)
+        gradient[number_of_layers - 1]['a'] = transient_gradient[number_of_layers - 1]['a'] / float(number_of_datapoint)
+        for i in range(number_of_layers - 2, -1, -1):
+            gradient[i]['h'] = transient_gradient[i]['h'] / float(number_of_datapoint)
+            gradient[i]['a'] = transient_gradient['a'] / float(number_of_datapoint)
+        for i in range(number_of_layers - 1, -1, -1):
+            gradient[i]['weight'] = transient_gradient['weight'] / float(number_of_datapoint)
+            gradient[i]['bias'] = transient_gradient['bias'] / float(number_of_datapoint)
     else:
 
-        gradient[n - 1]['h'] += output_grad(network[n - 1]['h'], y)
-        gradient[n - 1]['a'] += last_grad(network[n - 1]['a'], y)
-        for i in range(n - 2, 0, -1):
-            gradient[i]['h'] += h_grad(network=network, gradient=gradient, layer=i)
-            gradient[i]['a'] += a_grad(network=network, gradient=gradient, layer=i)
-            gradient[i]['a'] = gradient[i]['a'] / np.linalg.norm(gradient[i]['a'])
-        for i in range(n - 1, 0, -1):
-            gradient[i]['weight'] += w_grad(network=network, gradient=gradient, layer=i, x=x)
-            gradient[i]['bias'] += gradient[i]['a']
+        gradient[number_of_layers - 1]['h'] += transient_gradient[number_of_layers - 1]['h'] / float(
+            number_of_datapoint)
+        gradient[number_of_layers - 1]['a'] += transient_gradient[number_of_layers - 1]['a'] / float(
+            number_of_datapoint)
+        for i in range(number_of_layers - 2, -1, -1):
+            gradient[i]['h'] += transient_gradient[i]['h'] / float(number_of_datapoint)
+            gradient[i]['a'] += transient_gradient[i]['a'] / float(number_of_datapoint)
+        for i in range(number_of_layers - 1, -1, -1):
+            gradient[i]['weight'] += transient_gradient[i]['weight'] / float(number_of_datapoint)
+            gradient[i]['bias'] += transient_gradient[i]['bias'] / float(number_of_datapoint)
 
 
 def descent(eta, layers, number_of_data_points):
@@ -74,14 +84,17 @@ def train(datapoints, epochs, labels, f):
             forward_propagation(n, x)
             clean = False
             # backpropagation starts
-        backward_propagation(n, x, y, clean=clean)
+        backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
         descent(eta=.01, layers=n, number_of_data_points=d)
         loss = -1 * np.log(network[n - 1]['h'][y])
 
         # forward propagation ends
 
+
 """master() is used to intialise all the learning parameters 
    in every layer and then start the training process"""
+
+
 def master(layers, neurons_in_each_layer, epochs, k, x, y):
     n = neurons_in_each_layer
 
@@ -92,9 +105,8 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     for i in range(layers):
         # Initialize an Empty Dictionary: layer
         layer = {}
-
+        # Weight matrix depends on number of features in the first layer
         if i == 0:
-            # Weight matrix depends on number of features in the first layer
             layer['weight'] = np.random.normal(size=(n, n_features))
             glorot = n_features
         elif i == layers - 1:
@@ -119,6 +131,8 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     global gradient
     """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
     gradient = copy.deepcopy(network)
+    global transient_gradient
+    transient_gradient = copy.deepcopy(network)
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
