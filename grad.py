@@ -16,23 +16,23 @@ def last_grad(y_hat, label):
     return temp
 
 
-def a_grad(network, gradient, layer):
+def a_grad(network, transient_gradient, layer):
     # grad w.r.t out a_i's layer
     active_grad_ = np.multiply(network[layer]['h'], 1 - network[layer]['h'])
-    z = np.multiply(gradient[layer]['h'], active_grad_)
+    z = np.multiply(transient_gradient[layer]['h'], active_grad_)
     return z
     # hadamard multiplication
 
 
-def h_grad(network, gradient, layer):
+def h_grad(network, transient_gradient, layer):
     # grad w.r.t out h_i layer
     network[layer]['weight'].transpose()
-    z = network[layer + 1]['weight'].transpose() @ gradient[layer + 1]['a']
+    z = network[layer + 1]['weight'].transpose() @ transient_gradient[layer + 1]['a']
     return z
 
 
-def w_grad(network, gradient, layer, x):
+def w_grad(network, transient_gradient, layer, x):
     if layer == 0:
-        return gradient[layer]['a'] @ x.transpose()
+        return transient_gradient[layer]['a'] @ x.transpose()
     else:
-        return gradient[layer]['a'] @ network[layer - 1]['h'].transpose()
+        return transient_gradient[layer]['a'] @ network[layer - 1]['h'].transpose()
