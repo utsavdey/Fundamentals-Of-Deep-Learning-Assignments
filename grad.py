@@ -6,7 +6,7 @@ def output_grad(y_hat, label):
     # grad w.r.t out activation
     temp = np.zeros_like(y_hat)
     temp[label] = -1 / y_hat[label]
-    return temp / np.linalg.norm(temp)
+    return temp
 
 
 def last_grad(y_hat, label):

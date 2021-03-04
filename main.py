@@ -34,10 +34,10 @@ def forward_propagation(n, x):
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
     transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y)
     transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['a'], y)
-    for i in range(number_of_layers - 2, 0, -1):
+    for i in range(number_of_layers - 2, -1, -1):
         transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
         transient_gradient[i]['a'] = a_grad(network=network, transient_gradient=transient_gradient, layer=i)
-    for i in range(number_of_layers - 1, 0, -1):
+    for i in range(number_of_layers - 1, -1, -1):
         transient_gradient[i]['weight'] = w_grad(network=network, transient_gradient=transient_gradient, layer=i, x=x)
         transient_gradient[i]['bias'] = gradient[i]['a']
     if clean:
@@ -45,10 +45,10 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
         gradient[number_of_layers - 1]['a'] = transient_gradient[number_of_layers - 1]['a'] / float(number_of_datapoint)
         for i in range(number_of_layers - 2, -1, -1):
             gradient[i]['h'] = transient_gradient[i]['h'] / float(number_of_datapoint)
-            gradient[i]['a'] = transient_gradient['a'] / float(number_of_datapoint)
+            gradient[i]['a'] = transient_gradient[i]['a'] / float(number_of_datapoint)
         for i in range(number_of_layers - 1, -1, -1):
-            gradient[i]['weight'] = transient_gradient['weight'] / float(number_of_datapoint)
-            gradient[i]['bias'] = transient_gradient['bias'] / float(number_of_datapoint)
+            gradient[i]['weight'] = transient_gradient[i]['weight'] / float(number_of_datapoint)
+            gradient[i]['bias'] = transient_gradient[i]['bias'] / float(number_of_datapoint)
     else:
 
         gradient[number_of_layers - 1]['h'] += transient_gradient[number_of_layers - 1]['h'] / float(
@@ -136,5 +136,5 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=3, epochs=6, k=10, x=trainX[1:10], y=trainy[1:10])
+master(layers=3, neurons_in_each_layer=3, epochs=2, k=10, x=trainX[1:3], y=trainy[1:3])
 
