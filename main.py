@@ -5,6 +5,7 @@ import copy
 from keras.datasets import fashion_mnist
 from grad import *
 from activation import *
+from loss import *
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -17,7 +18,8 @@ network = []
 gradient = []
 # store gradient w.r.t a single datapoint
 transient_gradient = []
-
+#will contain the total amount of loss for each timestep(1). timestep defined during lecture.
+loss=0
 
 def forward_propagation(n, x):
     for i in range(n):
@@ -66,7 +68,7 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
 def descent(eta, layers, number_of_data_points):
     for i in range(layers):
         network[i]['weight'] -= eta * gradient[i]['weight']
-        network[i]['bias'] -= eta * gradient[i]['bias']
+        network[i]['bias'] -= eta  * gradient[i]['bias']
 
 
 # 1 epoch = 1 pass over the data
@@ -77,16 +79,22 @@ def train(datapoints, epochs, labels, f):
     # forward propagation
     for i in range(epochs):
         clean = True
+        #initiating loss for current epoch
+        global loss
+        loss=0
         for j in range(d):
             # creating a single data vector and normalising color values between 0 to 1
             x = datapoints[j].reshape(784, 1) / 255.0
             y = labels[j]
             forward_propagation(n, x)
+            #adding loss w.r.t to a single datapoint
+            loss += cross_entropy(label=y,softmax_output=network[n-1]['h'])
             backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
             clean = False
 
-        descent(eta=.1, layers=n, number_of_data_points=d)
-        loss = -1 * np.log(network[n - 1]['h'][y])
+        descent(eta=.5, layers=n, number_of_data_points=d)
+        #printing cumulated loss.
+        print(loss)
 
         # forward propagation ends
 
@@ -136,4 +144,5 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=3, epochs=2, k=10, x=trainX[1:3], y=trainy[1:3])
+master(layers=3, neurons_in_each_layer=8, epochs=50, k=10, x=trainX, y=trainy)
+
