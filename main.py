@@ -65,8 +65,8 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
 
 def descent(eta, layers, number_of_data_points):
     for i in range(layers):
-        network[i]['weight'] -= (eta / float(number_of_data_points)) * gradient[i]['weight']
-        network[i]['bias'] -= (eta / float(number_of_data_points)) * gradient[i]['bias']
+        network[i]['weight'] -= eta * gradient[i]['weight']
+        network[i]['bias'] -= eta * gradient[i]['bias']
 
 
 # 1 epoch = 1 pass over the data
@@ -85,7 +85,7 @@ def train(datapoints, epochs, labels, f):
             backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
             clean = False
 
-        descent(eta=.01, layers=n, number_of_data_points=d)
+        descent(eta=.1, layers=n, number_of_data_points=d)
         loss = -1 * np.log(network[n - 1]['h'][y])
 
         # forward propagation ends
@@ -137,4 +137,3 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
 
 
 master(layers=3, neurons_in_each_layer=3, epochs=2, k=10, x=trainX[1:3], y=trainy[1:3])
-
