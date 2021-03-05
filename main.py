@@ -18,8 +18,9 @@ network = []
 gradient = []
 # store gradient w.r.t a single datapoint
 transient_gradient = []
-#will contain the total amount of loss for each timestep(1). timestep defined during lecture.
-loss=0
+# will contain the total amount of loss for each timestep(1). timestep defined during lecture.
+loss = 0
+
 
 def forward_propagation(n, x):
     for i in range(n):
@@ -68,7 +69,7 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
 def descent(eta, layers, number_of_data_points):
     for i in range(layers):
         network[i]['weight'] -= eta * gradient[i]['weight']
-        network[i]['bias'] -= eta  * gradient[i]['bias']
+        network[i]['bias'] -= eta * gradient[i]['bias']
 
 
 # 1 epoch = 1 pass over the data
@@ -79,63 +80,68 @@ def train(datapoints, epochs, labels, f):
     # forward propagation
     for i in range(epochs):
         clean = True
-        #initiating loss for current epoch
+        # initiating loss for current epoch
         global loss
-        loss=0
+        loss = 0
         for j in range(d):
             # creating a single data vector and normalising color values between 0 to 1
             x = datapoints[j].reshape(784, 1) / 255.0
             y = labels[j]
             forward_propagation(n, x)
-            #adding loss w.r.t to a single datapoint
-            loss += cross_entropy(label=y,softmax_output=network[n-1]['h'])
+            # adding loss w.r.t to a single datapoint
+            loss += cross_entropy(label=y, softmax_output=network[n - 1]['h'])
             backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
             clean = False
 
         descent(eta=.5, layers=n, number_of_data_points=d)
-        #printing cumulated loss.
+        # printing cumulated loss.
         print(loss)
 
         # forward propagation ends
+
+
+""" Adds a particular on top of previous layer , the layers are built in a incremental way.
+    Context denotes the type of layer we have.Eg - Sigmoid or Tanh etc.
+    Passing any number to input_dim it we counted as the first layer
+ """
+
+
+def add_layer(number_of_neurons, context, input_dim=None):
+    # Initialize an Empty Dictionary: layer
+    layer = {}
+    if input_dim != None:
+        layer['weight'] = np.random.normal(size=(number_of_neurons, input_dim))
+        glorot = input_dim
+    else:
+        # get number of neurons in the previous layer
+        previous_lay_neuron_num = network[-1]['h'].shape[0]
+        layer['weight'] = np.random.normal(size=(number_of_neurons, previous_lay_neuron_num))
+        glorot = previous_lay_neuron_num
+    layer['weight'] = layer['weight'] * math.sqrt(1 / float(glorot))
+    # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
+    layer['bias'] = np.random.rand(number_of_neurons, 1)
+    # initialises a 2-D array of size [n*1] and type float with element having value as 1.
+    layer['h'] = np.ones((number_of_neurons, 1))
+    layer['a'] = np.ones((number_of_neurons, 1))
+    layer['context'] = context
+    network.append(layer)
 
 
 """master() is used to intialise all the learning parameters 
    in every layer and then start the training process"""
 
 
-def master(layers, neurons_in_each_layer, epochs, k, x, y):
+def master(layers, neurons_in_each_layer, epochs, output_dim, x, y):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
+    #adding layers
+    add_layer(number_of_neurons=16,context='sigmoid',input_dim=784)
+    add_layer(number_of_neurons=8,context='sigmoid')
+    add_layer(number_of_neurons=output_dim,context='softmax')
 
-    for i in range(layers):
-        # Initialize an Empty Dictionary: layer
-        layer = {}
-        # Weight matrix depends on number of features in the first layer
-        if i == 0:
-            layer['weight'] = np.random.normal(size=(n, n_features))
-            glorot = n_features
-        elif i == layers - 1:
-            # special handling for the last layer.
-            n = k
-            """Create an array of size [number of classes * neurons last hidden layer] and fill it with random values
-               from a Gaussian Distribution having 0 mean and 1 S.D."""
-            layer['weight'] = np.random.normal(size=(n, neurons_in_each_layer))
-            glorot = neurons_in_each_layer
-        else:
-            # Assuming the number of neurons in every hidden layer is the same
-            layer['weight'] = np.random.normal(size=(n, n))
-            glorot = n
-        # glorot inittialization. Vanishing and exploding gradient.
-        layer['weight'] = layer['weight'] * math.sqrt(1 / float(glorot))
-        # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
-        layer['bias'] = np.random.rand(n, 1)
-        # initialises a 2-D array of size [n*1] and type float with element having value as 1.
-        layer['h'] = np.ones((n, 1))
-        layer['a'] = np.ones((n, 1))
-        network.append(layer)
     global gradient
     """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
     gradient = copy.deepcopy(network)
@@ -144,5 +150,4 @@ def master(layers, neurons_in_each_layer, epochs, k, x, y):
     train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, k=10, x=trainX, y=trainy)
-
+master(layers=3, neurons_in_each_layer=8, epochs=50, output_dim=10, x=trainX, y=trainy)
