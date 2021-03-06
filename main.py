@@ -28,15 +28,13 @@ def forward_propagation(n, x):
             network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
         else:
             network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
-        if i == n - 1:
-            network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
-        else:
-            network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])
+
+        network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
 
 
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
     transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y)
-    transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['a'], y)
+    transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['h'], y)
     for i in range(number_of_layers - 2, -1, -1):
         transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
         transient_gradient[i]['a'] = a_grad(network=network, transient_gradient=transient_gradient, layer=i)
