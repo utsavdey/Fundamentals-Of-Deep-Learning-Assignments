@@ -2,28 +2,41 @@ import numpy as np
 import math
 
 
-def sigmoid(x):
+# this function helps in calculation of sigmoid function value of a component of vector
+def sigmoid_element_wise(vector_component):
     # if-else to prevent math overflow
-    if x >= 0:
-        return 1 / (1 + math.exp(-x))
+    if vector_component >= 0:
+        return 1 / (1 + math.exp(-vector_component))
     else:
-        return math.exp(x) / (math.exp(x) + 1)
+        return math.exp(vector_component) / (math.exp(vector_component) + 1)
 
 
-def softmax(x):
-    x = np.exp(x)
-    x = x / np.sum(x)
-    return x
+# this function calculated sigmoid of pre - activation layer
+def sigmoid(pre_activation_vector):
+    # create a vector of same shape as input
+    activated_vector = np.empty_like(pre_activation_vector)
+    # iterate over input
+    for i, elem in np.ndenumerate(pre_activation_vector):
+        # calculate component wise sigmoid
+        activated_vector[i] = sigmoid_element_wise(elem)
+    return activated_vector
 
 
-def activation_function(a, _activate_func_callback):
-    # uses call back mechanism to pass a function reference
-    if _activate_func_callback == softmax:
+# this function creates softmax
+def softmax(pre_activation_vector):
+    pre_activation_vector = np.exp(pre_activation_vector)
+    pre_activation_vector = pre_activation_vector / np.sum(pre_activation_vector)
+    return pre_activation_vector
+
+
+# this function handles the input and redirects the request to proper function
+def activation_function(pre_activation_vector, context):
+    if context == 'softmax':
         # if reference is softmax then call softmax
-        return softmax(a)
-
-    g = np.empty_like(a)
-    for i, elem in np.ndenumerate(a):
-        g[i] = _activate_func_callback(elem)
-        # hidden layer activation function can be anything.
-    return g
+        return softmax(pre_activation_vector)
+    elif context == 'sigmoid':
+        # if reference is sigmoid then call softmax
+        return sigmoid(pre_activation_vector)
+    else:
+        # Error handling
+        return None
