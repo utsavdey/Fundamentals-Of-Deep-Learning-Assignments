@@ -32,11 +32,14 @@ def softmax(pre_activation_vector):
 # this function handles the input and redirects the request to proper function
 def activation_function(pre_activation_vector, context):
     if context == 'softmax':
-        # if reference is softmax then call softmax
+        # calling softmax
         return softmax(pre_activation_vector)
     elif context == 'sigmoid':
-        # if reference is sigmoid then call softmax
+        # calling sigmoid
         return sigmoid(pre_activation_vector)
+    elif context == 'tanh':
+        # if reference is sigmoid then call softmax
+        return np.tanh(pre_activation_vector)
     else:
         # Error handling
         return None
