@@ -28,10 +28,8 @@ def forward_propagation(n, x):
             network[i]['a'] = network[i]['weight'] @ x + network[i]['bias']
         else:
             network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
-        if i == n - 1:
-            network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
-        else:
-            network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])
+
+        network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
 
 
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
