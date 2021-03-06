@@ -6,6 +6,13 @@ from keras.datasets import fashion_mnist
 from grad import *
 from activation import *
 from loss import *
+from optimiser import *
+
+"""Implement Feed Forward neural network where the parameters are
+   number of hidden layers and number of neurons in each hidden layer"""
+
+import copy
+from keras.datasets import fashion_mnist
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -20,6 +27,8 @@ gradient = []
 transient_gradient = []
 # will contain the total amount of loss for each timestep(1). timestep defined during lecture.
 loss = 0
+# is used to stochastically select our data.
+shuffler = None
 
 
 def forward_propagation(n, x):
@@ -64,39 +73,38 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
             gradient[i]['bias'] += transient_gradient[i]['bias'] / float(number_of_datapoint)
 
 
-def descent(eta, layers, number_of_data_points):
-    for i in range(layers):
-        network[i]['weight'] -= eta * gradient[i]['weight']
-        network[i]['bias'] -= eta * gradient[i]['bias']
-
-
 # 1 epoch = 1 pass over the data
 def train(datapoints, batch, epochs, labels, f):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
+    # creating simple gradient descent optimiser
+    opt = SimpleGradientDescent(eta=.01, layers=n)
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
-        for i in range(0, d, batch):
+        # shuffler at the start of each epoch
+        np.random.shuffle(shuffler)
+        for i in range(0, d - batch, batch):
             clean = True
             # initiating loss for current epoch
             global loss
             loss = 0
             # iterate over a batch
-            for j in range(i, i + batch, 1):
+            print(i + batch)
+            for j in range(i, i + batch + 1, 1):
                 # creating a single data vector and normalising color values between 0 to 1
-                x = datapoints[j].reshape(784, 1) / 255.0
-                y = labels[j]
+                x = datapoints[shuffler[j]].reshape(784, 1) / 255.0
+                y = labels[shuffler[j]]
                 forward_propagation(n, x)
                 # adding loss w.r.t to a single datapoint
                 loss += cross_entropy(label=y, softmax_output=network[n - 1]['h'])
                 backward_propagation(n, x, y, number_of_datapoint=batch, clean=clean)
                 clean = False
 
-            descent(eta=.01, layers=n, number_of_data_points=batch)
+            opt.descent(network=network, gradient=gradient)
+            opt.anneal(loss=loss)
             # printing cumulated loss.
             print(loss)
-
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -118,10 +126,10 @@ def add_layer(number_of_neurons, context, input_dim=None):
         glorot = previous_lay_neuron_num
     layer['weight'] = layer['weight'] * math.sqrt(1 / float(glorot))
     # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
-    layer['bias'] = np.random.rand(number_of_neurons, 1)
+    layer['bias'] = np.zeros((number_of_neurons, 1))
     # initialises a 2-D array of size [n*1] and type float with element having value as 1.
-    layer['h'] = np.ones((number_of_neurons, 1))
-    layer['a'] = np.ones((number_of_neurons, 1))
+    layer['h'] = np.zeros((number_of_neurons, 1))
+    layer['a'] = np.zeros((number_of_neurons, 1))
     layer['context'] = context
     network.append(layer)
 
@@ -137,8 +145,8 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     # adding layers
-    add_layer(number_of_neurons=16, context='sigmoid', input_dim=784)
-    add_layer(number_of_neurons=8, context='sigmoid')
+    add_layer(number_of_neurons=16, context='relu', input_dim=784)
+    add_layer(number_of_neurons=8, context='relu')
     add_layer(number_of_neurons=output_dim, context='softmax')
 
     global gradient
@@ -146,7 +154,10 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
+    global shuffler
+    shuffler = np.arange(0, len(trainX))
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=60000, output_dim=10, x=trainX, y=trainy)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=3200, output_dim=10, x=trainX, y=trainy)
+
