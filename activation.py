@@ -22,21 +22,36 @@ def sigmoid(pre_activation_vector):
     return activated_vector
 
 
-# this function creates softmax
+# this function calculates softmax
 def softmax(pre_activation_vector):
-    pre_activation_vector = np.exp(pre_activation_vector)
-    pre_activation_vector = pre_activation_vector / np.sum(pre_activation_vector)
-    return pre_activation_vector
+    post_act = np.copy(pre_activation_vector)
+    post_act = np.exp(post_act)
+    post_act = post_act / np.sum(post_act)
+    return post_act
+
+
+# this function calculates softmax
+def relu(pre_activation_vector):
+    post_act = np.copy(pre_activation_vector)
+    # get the position of vector that is -ve and make them 0
+    post_act[post_act < 0] = 0
+    return post_act
 
 
 # this function handles the input and redirects the request to proper function
 def activation_function(pre_activation_vector, context):
     if context == 'softmax':
-        # if reference is softmax then call softmax
+        # calling softmax
         return softmax(pre_activation_vector)
     elif context == 'sigmoid':
-        # if reference is sigmoid then call softmax
+        # calling sigmoid
         return sigmoid(pre_activation_vector)
+    elif context == 'tanh':
+        # creating tanh
+        return np.copy(np.tanh(pre_activation_vector))
+    elif context == 'relu':
+        # calling relu
+        return relu(pre_activation_vector)
     else:
         # Error handling
         return None

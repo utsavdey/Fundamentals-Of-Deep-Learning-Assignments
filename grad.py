@@ -21,10 +21,29 @@ def sigmoid_grad(pre_activation_vector):
     return np.multiply(pre_activation_vector, 1 - pre_activation_vector)
 
 
+# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is tanh.
+def tanh_grad(pre_activation_vector):
+    return 1 - np.power(pre_activation_vector, 2)
+
+
+# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is relu.
+def relu_grad(pre_activation_vector):
+    grad = np.copy(pre_activation_vector)
+    # making +ve and 0 component 1
+    grad[grad >= 0] = 1
+    # making -ve component 0
+    grad[grad < 0] = 0
+    return grad
+
+
 def a_grad(network, transient_gradient, layer):
     # grad w.r.t  a_i's layer
     if network[layer]['context'] == 'sigmoid':
-        active_grad_ = sigmoid_grad(network[layer]['h'])
+        active_grad_ = sigmoid_grad(network[layer]['a'])
+    elif network[layer]['context'] == 'tanh':
+        active_grad_ = tanh_grad(network[layer]['a'])
+    elif network[layer]['context'] == 'relu':
+        active_grad_ = relu_grad(network[layer]['a'])
     z = np.multiply(transient_gradient[layer]['h'], active_grad_)
     return z
     # hadamard multiplication
