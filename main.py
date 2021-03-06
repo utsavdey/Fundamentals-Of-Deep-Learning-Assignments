@@ -27,7 +27,8 @@ gradient = []
 transient_gradient = []
 # will contain the total amount of loss for each timestep(1). timestep defined during lecture.
 loss = 0
-
+# is used to stochastically select our data.
+shuffler = None
 
 
 def forward_propagation(n, x):
@@ -81,6 +82,8 @@ def train(datapoints, batch, epochs, labels, f):
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
+        # shuffler at the start of each epoch
+        np.random.shuffle(shuffler)
         for i in range(0, d - batch, batch):
             clean = True
             # initiating loss for current epoch
@@ -90,8 +93,8 @@ def train(datapoints, batch, epochs, labels, f):
             print(i + batch)
             for j in range(i, i + batch + 1, 1):
                 # creating a single data vector and normalising color values between 0 to 1
-                x = datapoints[j].reshape(784, 1) / 255.0
-                y = labels[j]
+                x = datapoints[shuffler[j]].reshape(784, 1) / 255.0
+                y = labels[shuffler[j]]
                 forward_propagation(n, x)
                 # adding loss w.r.t to a single datapoint
                 loss += cross_entropy(label=y, softmax_output=network[n - 1]['h'])
@@ -123,10 +126,10 @@ def add_layer(number_of_neurons, context, input_dim=None):
         glorot = previous_lay_neuron_num
     layer['weight'] = layer['weight'] * math.sqrt(1 / float(glorot))
     # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
-    layer['bias'] = np.random.rand(number_of_neurons, 1)
+    layer['bias'] = np.zeros((number_of_neurons, 1))
     # initialises a 2-D array of size [n*1] and type float with element having value as 1.
-    layer['h'] = np.ones((number_of_neurons, 1))
-    layer['a'] = np.ones((number_of_neurons, 1))
+    layer['h'] = np.zeros((number_of_neurons, 1))
+    layer['a'] = np.zeros((number_of_neurons, 1))
     layer['context'] = context
     network.append(layer)
 
@@ -151,6 +154,8 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
+    global shuffler
+    shuffler = np.arange(0, len(trainX))
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features)
 
 
