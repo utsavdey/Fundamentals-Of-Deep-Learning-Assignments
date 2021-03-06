@@ -16,9 +16,15 @@ def last_grad(y_hat, label):
     return temp
 
 
+# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is sigmoid.
+def sigmoid_grad(pre_activation_vector):
+    return np.multiply(pre_activation_vector, 1 - pre_activation_vector)
+
+
 def a_grad(network, transient_gradient, layer):
-    # grad w.r.t out a_i's layer
-    active_grad_ = np.multiply(network[layer]['h'], 1 - network[layer]['h'])
+    # grad w.r.t  a_i's layer
+    if network[layer]['context'] == 'sigmoid':
+        active_grad_ = sigmoid_grad(network[layer]['h'])
     z = np.multiply(transient_gradient[layer]['h'], active_grad_)
     return z
     # hadamard multiplication
