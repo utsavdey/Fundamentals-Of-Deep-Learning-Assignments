@@ -73,31 +73,32 @@ def descent(eta, layers, number_of_data_points):
 
 
 # 1 epoch = 1 pass over the data
-def train(datapoints, epochs, labels, f):
+def train(datapoints, batch, epochs, labels, f):
     n = len(network)  # number of layers
-    # f = len(datapoints[0])  # number of features
     d = len(datapoints)  # number of data points
-    # forward propagation
-    for i in range(epochs):
-        clean = True
-        # initiating loss for current epoch
-        global loss
-        loss = 0
-        for j in range(d):
-            # creating a single data vector and normalising color values between 0 to 1
-            x = datapoints[j].reshape(784, 1) / 255.0
-            y = labels[j]
-            forward_propagation(n, x)
-            # adding loss w.r.t to a single datapoint
-            loss += cross_entropy(label=y, softmax_output=network[n - 1]['h'])
-            backward_propagation(n, x, y, number_of_datapoint=d, clean=clean)
-            clean = False
+    # loop for epoch iteration
+    for k in range(epochs):
+        # iteration for different starting point for epoch
+        for i in range(0, d, batch):
+            clean = True
+            # initiating loss for current epoch
+            global loss
+            loss = 0
+            # iterate over a batch
+            for j in range(i, i + batch, 1):
+                # creating a single data vector and normalising color values between 0 to 1
+                x = datapoints[j].reshape(784, 1) / 255.0
+                y = labels[j]
+                forward_propagation(n, x)
+                # adding loss w.r.t to a single datapoint
+                loss += cross_entropy(label=y, softmax_output=network[n - 1]['h'])
+                backward_propagation(n, x, y, number_of_datapoint=batch, clean=clean)
+                clean = False
 
-        descent(eta=.5, layers=n, number_of_data_points=d)
-        # printing cumulated loss.
-        print(loss)
+            descent(eta=.01, layers=n, number_of_data_points=batch)
+            # printing cumulated loss.
+            print(loss)
 
-        # forward propagation ends
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -131,7 +132,7 @@ def add_layer(number_of_neurons, context, input_dim=None):
    in every layer and then start the training process"""
 
 
-def master(layers, neurons_in_each_layer, epochs, output_dim, x, y):
+def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
@@ -147,7 +148,8 @@ def master(layers, neurons_in_each_layer, epochs, output_dim, x, y):
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
-    train(datapoints=trainX, labels=trainy, epochs=epochs, f=n_features)
+    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, output_dim=10, x=trainX, y=trainy)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=60000, output_dim=10, x=trainX, y=trainy)
+
