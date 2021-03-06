@@ -36,7 +36,7 @@ def forward_propagation(n, x):
 
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
     transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y)
-    transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['a'], y)
+    transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['h'], y)
     for i in range(number_of_layers - 2, -1, -1):
         transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
         transient_gradient[i]['a'] = a_grad(network=network, transient_gradient=transient_gradient, layer=i)
@@ -152,4 +152,3 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
 
 
 master(layers=3, neurons_in_each_layer=8, epochs=50, batch=60000, output_dim=10, x=trainX, y=trainy)
-
