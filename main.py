@@ -151,4 +151,4 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=10, batch=60000, output_dim=10, x=trainX, y=trainy)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=60000, output_dim=10, x=trainX, y=trainy)
