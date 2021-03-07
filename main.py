@@ -27,8 +27,6 @@ gradient = []
 transient_gradient = []
 # will contain the total amount of loss for each timestep(1). timestep defined during lecture.
 loss = 0
-# is used to stochastically select our data.
-shuffler = None
 
 
 def forward_propagation(n, x):
@@ -77,6 +75,22 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
 def train(datapoints, batch, epochs, labels, f):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
+    """this variable will be used to separate , training and validation set
+        1) we take 10 % of the data as suggested in the question. -->int(d * .1)
+        2) we also add any extra remaining data to validation set so that,
+        training data is exactly divisible by batch size -->((d - int(d * .1)) % batch
+    """
+    border = d - ((d - int(d * .1)) % batch + int(d * .1))
+    # separating the validation data
+    validateX = datapoints[border:]
+    validateY = labels[border:]
+    # deleting copied datapoints
+    datapoints = datapoints[:border]
+    labels = labels[:border]
+    # updating d
+    d = border
+    # is used to stochastically select our data.
+    shuffler = np.arange(0, len(d))
     # creating simple gradient descent optimiser
     opt = SimpleGradientDescent(eta=.01, layers=n)
     # loop for epoch iteration
@@ -84,14 +98,14 @@ def train(datapoints, batch, epochs, labels, f):
         # iteration for different starting point for epoch
         # shuffler at the start of each epoch
         np.random.shuffle(shuffler)
-        for i in range(0, d - batch, batch):
+        for i in range(0, d - batch + 1, batch):
             clean = True
             # initiating loss for current epoch
             global loss
             loss = 0
             # iterate over a batch
             print(i + batch)
-            for j in range(i, i + batch + 1, 1):
+            for j in range(i, i + batch, 1):
                 # creating a single data vector and normalising color values between 0 to 1
                 x = datapoints[shuffler[j]].reshape(784, 1) / 255.0
                 y = labels[shuffler[j]]
@@ -154,8 +168,6 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
-    global shuffler
-    shuffler = np.arange(0, len(trainX))
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features)
 
 
