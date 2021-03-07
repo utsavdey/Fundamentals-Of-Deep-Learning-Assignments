@@ -13,8 +13,6 @@ trainX=trainX / 255.0
 testX=testX / 255.0
 
 def log_images():
-	# api = wandb.Api()
-	# run = api.run("arup-das-cs20s016/Projects/plot_images/trails_123")
 	set_images=[]
 	set_labels=[]
 	count=0
