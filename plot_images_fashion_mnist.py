@@ -2,9 +2,9 @@
 
 from keras.datasets import fashion_mnist
 import wandb
-from wandb.keras import WandbCallback
+# from wandb.keras import WandbCallback
 
-wandb.init(project="plot_images", entity="arup-das-cs20s016")
+wandb.init(project="MNIST_report",id="Question_1")
 class_names = ['T-shirt/top', 'Trouser/pants', 'Pullover shirt', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag',
 			   'Ankle boot']
 
@@ -13,6 +13,8 @@ trainX=trainX / 255.0
 testX=testX / 255.0
 
 def log_images():
+	# api = wandb.Api()
+	# run = api.run("arup-das-cs20s016/Projects/plot_images/trails_123")
 	set_images=[]
 	set_labels=[]
 	count=0
@@ -25,6 +27,6 @@ def log_images():
 				pass
 		if count==10:
 			break
-		
+
 	wandb.log({"Plot": [wandb.Image(img, caption=caption) for img, caption in zip(set_images, set_labels)]})
 log_images()
