@@ -8,14 +8,7 @@ from activation import *
 from loss import *
 from optimiser import *
 
-"""Implement Feed Forward neural network where the parameters are
-   number of hidden layers and number of neurons in each hidden layer"""
 
-"""Implement Feed Forward neural network where the parameters are
-   number of hidden layers and number of neurons in each hidden layer"""
-
-import copy
-from keras.datasets import fashion_mnist
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -82,12 +75,12 @@ def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
             forward_propagation(number_of_layer, x.reshape(784, 1) / 255.0)
             # adding loss w.r.t to a single datapoint
             loss += cross_entropy(label=y, softmax_output=network[number_of_layer - 1]['h'])
-    average_loss = loss / float(len(validateX))
+    average_loss=loss/float(len(validateX))
     return average_loss
 
 
 # 1 epoch = 1 pass over the data
-def train(datapoints, batch, epochs, labels, f, learning_rate):
+def train(datapoints, batch, epochs, labels, f,learning_rate):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """this variable will be used to separate , training and validation set
@@ -107,7 +100,7 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
-    opt = SimpleGradientDescent(eta=learning_rate, layers=n)
+    opt = MomentumGradientDescent(eta=learning_rate, layers=n,gamma=.99)
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
@@ -131,8 +124,9 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
             average_loss = validate(number_of_layer=n, validateX=validateX, validateY=validateY)
             # printing average loss.
             print(average_loss)
-    # anneal if required
+    #anneal if required
     opt.anneal(loss=average_loss)
+
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -166,15 +160,15 @@ def add_layer(number_of_neurons, context, input_dim=None):
    in every layer and then start the training process"""
 
 
-def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate):
+def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y,learning_rate):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     # adding layers
-    add_layer(number_of_neurons=16, context='relu', input_dim=784)
-    add_layer(number_of_neurons=8, context='relu')
+    add_layer(number_of_neurons=16, context='sigmoid', input_dim=784)
+    add_layer(number_of_neurons=8, context='sigmoid')
     add_layer(number_of_neurons=output_dim, context='softmax')
 
     global gradient
@@ -182,7 +176,7 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
-    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, learning_rate=learning_rate)
+    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features,learning_rate=learning_rate)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.1)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy,learning_rate=.001)
