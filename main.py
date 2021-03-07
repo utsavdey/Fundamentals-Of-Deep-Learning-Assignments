@@ -172,3 +172,4 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y):
 
 
 master(layers=3, neurons_in_each_layer=8, epochs=50, batch=3200, output_dim=10, x=trainX, y=trainy)
+
