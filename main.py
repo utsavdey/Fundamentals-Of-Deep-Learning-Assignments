@@ -83,7 +83,7 @@ def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
 def train(datapoints, batch, epochs, labels, f,learning_rate):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
-    """this variable will be used to separate , training and validation set
+    """This variable will be used to separate , training and validation set
         1) we take 10 % of the data as suggested in the question. -->int(d * .1)
         2) we also add any extra remaining data to validation set so that,
         training data is exactly divisible by batch size -->((d - int(d * .1)) % batch
@@ -100,7 +100,7 @@ def train(datapoints, batch, epochs, labels, f,learning_rate):
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
-    opt = MomentumGradientDescent(eta=learning_rate, layers=n,gamma=.99)
+    opt = RMSProp(eta=learning_rate, layers=n,beta=.99)
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
@@ -167,8 +167,8 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y,learni
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     # adding layers
-    add_layer(number_of_neurons=16, context='sigmoid', input_dim=784)
-    add_layer(number_of_neurons=8, context='sigmoid')
+    add_layer(number_of_neurons=16, context='relu', input_dim=784)
+    add_layer(number_of_neurons=8, context='relu')
     add_layer(number_of_neurons=output_dim, context='softmax')
 
     global gradient
@@ -179,4 +179,4 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y,learni
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features,learning_rate=learning_rate)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy,learning_rate=.001)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy,learning_rate=.0005)
