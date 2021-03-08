@@ -2,6 +2,8 @@ import sys
 import copy
 import math
 
+import numpy as np
+
 """This file contains various gradient optimisers"""
 
 
@@ -53,17 +55,17 @@ class MomentumGradientDescent:
             self.momentum = copy.deepcopy(gradient)
             # initialize momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = (1 - gamma) * gradient[i]['weight']
-                self.momentum[i]['bias'] = (1 - gamma) * gradient[i]['bias']
+                self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
+                self.momentum[i]['bias'] = self.eta * gradient[i]['bias']
         else:
             # update momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + (1 - gamma) * gradient[i]['weight']
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (1 - gamma) * gradient[i]['bias']
+                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + self.eta * gradient[i]['weight']
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + self.eta * gradient[i]['bias']
         # the descent
         for i in range(self.layers):
-            network[i]['weight'] -= self.eta * self.momentum[i]['weight']
-            network[i]['bias'] -= self.eta * self.momentum[i]['bias']
+            network[i]['weight'] -= self.momentum[i]['weight']
+            network[i]['bias'] -= self.momentum[i]['bias']
 
         self.calls += 1
 
@@ -98,8 +100,8 @@ class NAG:
         else:
             # update the gradient using momentum
             for i in range(self.layers):
-                network[i]['weight'] -= self.eta * self.momentum[i]['weight']
-                network[i]['bias'] -= self.eta * self.momentum[i]['bias']
+                network[i]['weight'] -=  self.momentum[i]['weight']
+                network[i]['bias'] -= self.momentum[i]['bias']
 
     # function for gradient descending
     def descent(self, network, gradient):
@@ -119,14 +121,14 @@ class NAG:
             self.momentum = copy.deepcopy(gradient)
             # initialize momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = (1 - gamma) * gradient[i]['weight']
-                self.momentum[i]['bias'] = (1 - gamma) * gradient[i]['bias']
+                self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
+                self.momentum[i]['bias'] = self.eta* gradient[i]['bias']
         else:
             # update momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + (1 - gamma) * gradient[i][
+                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + self.eta * gradient[i][
                     'weight']
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (1 - gamma) * gradient[i]['bias']
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + self.eta * gradient[i]['bias']
 
         self.calls += 1
 
