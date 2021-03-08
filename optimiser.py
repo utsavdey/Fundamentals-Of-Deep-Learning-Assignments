@@ -1,7 +1,6 @@
 import sys
 import copy
 import math
-
 import numpy as np
 
 """This file contains various gradient optimisers"""
@@ -48,12 +47,13 @@ class MomentumGradientDescent:
 
     # function for gradient descending
     def descent(self, network, gradient):
+        """http://cse.iitm.ac.in/~miteshk/CS7015/Slides/Teaching/pdf/Lecture5.pdf , Slide 70"""
         gamma = min(1 - 2 ** (-1 - math.log((self.calls / 250.0) + 1, 2)), self.gamma)
 
         if self.momentum is None:
             # copy the structure
             self.momentum = copy.deepcopy(gradient)
-            # initialize momentum
+            # initialize momentum- refer above lecture slide 36
             for i in range(self.layers):
                 self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
                 self.momentum[i]['bias'] = self.eta * gradient[i]['bias']
@@ -111,7 +111,6 @@ class NAG:
             network[i]['weight'] -= self.eta * gradient[i]['weight']
             network[i]['bias'] -= self.eta * gradient[i]['bias']
 
-        # from the lecture
         gamma = min(1 - 2 ** (-1 - math.log((self.calls / 250.0) + 1, 2)), self.gamma)
 
         # generate momentum for the next time step next
@@ -124,7 +123,7 @@ class NAG:
                 self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
                 self.momentum[i]['bias'] = self.eta* gradient[i]['bias']
         else:
-            # update momentum
+            # update momentum: http://cse.iitm.ac.in/~miteshk/CS7015/Slides/Teaching/pdf/Lecture5.pdf , slide: 46
             for i in range(self.layers):
                 self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + self.eta * gradient[i][
                     'weight']
@@ -216,3 +215,50 @@ class ADAM:
             network[i]['bias'] -= self.eta * np.multiply(temp_inv, self.momentum[i]['bias'])
 
         self.calls += 1
+class RMSProp:
+    def __init__(self, eta, layers, beta):
+        # learning rate
+        self.eta = eta
+        # decay parameter for denominator
+        self.beta = beta
+        # historical loss, will be required for rate annealing
+        self.hist_loss = sys.float_info.max
+        # number of layers
+        self.layers = layers
+        # number of calls
+        self.calls = 1
+        # epsilon
+        self.epsilon = 0.001
+        # to implement update rule for RMSProp
+        self.update = None
+
+    # function for gradient descending
+    def descent(self, network, gradient):
+
+
+            # generate update for the next time step
+            if self.update is None:
+                # copy the structure
+                self.update = copy.deepcopy(gradient)
+                # initialize update at time step 1 assuming that update at time step 0 is 0
+                for i in range(self.layers):
+                    self.update[i]['weight'] = (1 - self.beta) * (gradient[i]['weight'])**2
+                    self.update[i]['bias'] = (1 - self.beta) * (gradient[i]['bias'])**2
+            else:
+                for i in range(self.layers):
+                    self.update[i]['weight'] = self.beta * self.update[i]['weight'] + (1 - self.beta) * (gradient[i][
+                        'weight'])**2
+                    self.update[i]['bias'] = self.beta * self.update[i]['bias'] + (1 - self.beta) * (gradient[i]['bias'])**2
+            # Now we use the update rule for RMSProp
+            for i in range(self.layers):
+                network[i]['weight'] = network[i]['weight']-np.multiply((self.eta / np.sqrt(self.update[i]['weight']+self.epsilon)) , gradient[i]['weight'])
+                network[i]['bias'] = network[i]['bias']-np.multiply((self.eta / np.sqrt(self.update[i]['bias']+self.epsilon)) , gradient[i]['bias'])
+
+            self.calls += 1
+
+    # function for learning rate annealing
+    def anneal(self, loss):
+            # if loss increases decrease learning rate
+            if loss > self.hist_loss:
+                self.eta = self.eta / 2.0
+            self.hist_loss = loss
