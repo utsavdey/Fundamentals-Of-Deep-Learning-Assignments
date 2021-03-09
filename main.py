@@ -1,6 +1,7 @@
 """Implement Feed Forward neural network where the parameters are
    number of hidden layers and number of neurons in each hidden layer"""
 
+import wandb
 import copy
 from keras.datasets import fashion_mnist
 from grad import *
@@ -83,7 +84,7 @@ def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
 
 
 # 1 epoch = 1 pass over the data
-def train(datapoints, batch, epochs, labels, opt, f, learning_rate):
+def fit(datapoints, batch, epochs, labels, opt, f, learning_rate):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -126,6 +127,7 @@ def train(datapoints, batch, epochs, labels, opt, f, learning_rate):
             opt.descent(network=network, gradient=gradient)
             average_loss = validate(number_of_layer=n, validateX=validateX, validateY=validateY)
             # printing average loss.
+            wandb.log({"accuracy": average_loss[1]})
             print(average_loss)
     # anneal if required
     opt.anneal(loss=average_loss[0])
@@ -171,7 +173,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
     network.append(layer)
 
 
-"""master() is used to intialise all the learning parameters 
+"""master() is used to initialise all the learning parameters 
    in every layer and then start the training process"""
 
 
@@ -179,25 +181,33 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
            opt, weight_init='xavier'):
     n = neurons_in_each_layer
 
-    """intializing number of input features per datapoint as 784, 
+    """initializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
+    global network
+    global gradient
+    global transient_gradient
+    network = []
+    gradient = []
+    transient_gradient = []
     # adding layers
     add_layer(number_of_neurons=neurons_in_each_layer, context=activation, input_dim=784, weight_init=weight_init)
     # creating hidden layers
     for i in range(layers - 2):
         add_layer(number_of_neurons=neurons_in_each_layer, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
-
-    global gradient
-    """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
+    # the value is not important, we basically copying the structure.
     gradient = copy.deepcopy(network)
-    global transient_gradient
     transient_gradient = copy.deepcopy(network)
-    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
-          learning_rate=learning_rate)
+    fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
+        learning_rate=learning_rate)
 
 
-opti = RMSProp(layers=3, eta=.001, beta=.99)
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.0005,
-       opt=opti, weight_init='xavier', activaton='relu')
+def train():
+    run = wandb.init()
+    wandb.run.name = wandb.run.id
+    wandb.run.save()
+    opti = RMSProp(layers=3, eta=.001, beta=.99)
+    master(layers=3, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch, output_dim=10, x=trainX,
+           y=trainy, learning_rate=.0005,
+           opt=opti, weight_init='xavier', activation='relu')
