@@ -103,7 +103,7 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
-    opt = RMSProp(eta=learning_rate, layers=n,beta=.99)
+    opt = NADAM(eta=learning_rate, layers=n,beta1=0.95,eps=1e-8)
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
@@ -181,4 +181,4 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, learning_rate=learning_rate)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.0005)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=64, output_dim=10, x=trainX, y=trainy, learning_rate=.0003)
