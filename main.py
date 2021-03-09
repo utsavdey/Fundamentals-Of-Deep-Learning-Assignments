@@ -1,13 +1,14 @@
 """Implement Feed Forward neural network where the parameters are
    number of hidden layers and number of neurons in each hidden layer"""
 
-import wandb
 import copy
 from keras.datasets import fashion_mnist
+from loss import *
 from grad import *
 from activation import *
-from loss import *
-from optimiser import *
+import wandb
+
+
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -127,10 +128,11 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate):
             opt.descent(network=network, gradient=gradient)
             average_loss = validate(number_of_layer=n, validateX=validateX, validateY=validateY)
             # printing average loss.
-            wandb.log({"accuracy": average_loss[1]})
+            wandb.log({"accuracy": average_loss[1],'loss':average_loss[0][0]})
             print(average_loss)
-    # anneal if required
-    opt.anneal(loss=average_loss[0])
+            if np.isnan(average_loss[0])[0]:
+              return
+
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -144,11 +146,11 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
     layer = {}
     if weight_init == 'random':
         if input_dim is not None:
-            layer['weight'] = np.random.rand(size=(number_of_neurons, input_dim))
+            layer['weight'] = np.random.rand(number_of_neurons, input_dim)
         else:
             # get number of neurons in the previous layer
             previous_lay_neuron_num = network[-1]['h'].shape[0]
-            layer['weight'] = np.random.rand(size=(number_of_neurons, previous_lay_neuron_num))
+            layer['weight'] = np.random.rand(number_of_neurons, previous_lay_neuron_num)
 
     elif weight_init == 'xavier':
         if input_dim is not None:
@@ -173,7 +175,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
     network.append(layer)
 
 
-"""master() is used to initialise all the learning parameters 
+"""master() is used to intialise all the learning parameters 
    in every layer and then start the training process"""
 
 
@@ -181,7 +183,7 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
            opt, weight_init='xavier'):
     n = neurons_in_each_layer
 
-    """initializing number of input features per datapoint as 784, 
+    """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     global network
@@ -191,23 +193,19 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = []
     transient_gradient = []
     # adding layers
-    add_layer(number_of_neurons=neurons_in_each_layer, context=activation, input_dim=784, weight_init=weight_init)
+    add_layer(number_of_neurons=32, context=activation, input_dim=784, weight_init=weight_init)
     # creating hidden layers
-    for i in range(layers - 2):
-        add_layer(number_of_neurons=neurons_in_each_layer, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=66, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=16, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
-    # the value is not important, we basically copying the structure.
+    print(network)
+
+
+    """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
         learning_rate=learning_rate)
 
 
-def train():
-    run = wandb.init()
-    wandb.run.name = wandb.run.id
-    wandb.run.save()
-    opti = RMSProp(layers=3, eta=.001, beta=.99)
-    master(layers=3, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch, output_dim=10, x=trainX,
-           y=trainy, learning_rate=.0005,
-           opt=opti, weight_init='xavier', activation='relu')
+
