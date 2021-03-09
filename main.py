@@ -83,7 +83,7 @@ def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
 
 
 # 1 epoch = 1 pass over the data
-def train(datapoints, batch, epochs, labels, f, learning_rate):
+def train(datapoints, batch, epochs, labels, opt, f, learning_rate):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -103,7 +103,7 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
-    opt = RMSProp(eta=learning_rate, layers=n, beta=.99)
+
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
@@ -176,15 +176,17 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
 
 
 def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
-           weight_init='xavier'):
+           opt, weight_init='xavier'):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     # adding layers
-    add_layer(number_of_neurons=16, context=activation, input_dim=784, weight_init=weight_init)
-    add_layer(number_of_neurons=8, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=neurons_in_each_layer, context=activation, input_dim=784, weight_init=weight_init)
+    # creating hidden layers
+    for i in range(layers - 2):
+        add_layer(number_of_neurons=neurons_in_each_layer, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
 
     global gradient
@@ -192,8 +194,10 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = copy.deepcopy(network)
     global transient_gradient
     transient_gradient = copy.deepcopy(network)
-    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, learning_rate=learning_rate)
+    train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
+          learning_rate=learning_rate)
 
 
+opti = RMSProp(layers=3, eta=.001, beta=.99)
 master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.0005,
-       weight_init='xavier', activaton='relu')
+       opt=opti, weight_init='xavier', activaton='relu')
