@@ -103,7 +103,7 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
-    opt = RMSProp(eta=learning_rate, layers=n,beta=.99)
+    opt = RMSProp(eta=learning_rate, layers=n, beta=.99)
     # loop for epoch iteration
     for k in range(epochs):
         # iteration for different starting point for epoch
@@ -137,18 +137,31 @@ def train(datapoints, batch, epochs, labels, f, learning_rate):
  """
 
 
-def add_layer(number_of_neurons, context, input_dim=None):
+def add_layer(number_of_neurons, context, weight_init, input_dim=None):
     # Initialize an Empty Dictionary: layer
     layer = {}
-    if input_dim != None:
-        layer['weight'] = np.random.normal(size=(number_of_neurons, input_dim))
-        glorot = input_dim
-    else:
-        # get number of neurons in the previous layer
-        previous_lay_neuron_num = network[-1]['h'].shape[0]
-        layer['weight'] = np.random.normal(size=(number_of_neurons, previous_lay_neuron_num))
-        glorot = previous_lay_neuron_num
-    layer['weight'] = layer['weight'] * math.sqrt(2 / float(glorot))
+    if weight_init == 'random':
+        if input_dim is not None:
+            layer['weight'] = np.random.rand(size=(number_of_neurons, input_dim))
+        else:
+            # get number of neurons in the previous layer
+            previous_lay_neuron_num = network[-1]['h'].shape[0]
+            layer['weight'] = np.random.rand(size=(number_of_neurons, previous_lay_neuron_num))
+
+    elif weight_init == 'xavier':
+        if input_dim is not None:
+            layer['weight'] = np.random.normal(size=(number_of_neurons, input_dim))
+            xavier = input_dim
+        else:
+            # get number of neurons in the previous layer
+            previous_lay_neuron_num = network[-1]['h'].shape[0]
+            layer['weight'] = np.random.normal(size=(number_of_neurons, previous_lay_neuron_num))
+            xavier = previous_lay_neuron_num
+        if context == 'relu':
+            # relu has different optimal weight initialization.
+            layer['weight'] = layer['weight'] * math.sqrt(2 / float(xavier))
+        else:
+            layer['weight'] = layer['weight'] * math.sqrt(1 / float(xavier))
     # initialise a 1-D array of size n with random samples from a uniform distribution over [0, 1).
     layer['bias'] = np.zeros((number_of_neurons, 1))
     # initialises a 2-D array of size [n*1] and type float with element having value as 1.
@@ -162,16 +175,17 @@ def add_layer(number_of_neurons, context, input_dim=None):
    in every layer and then start the training process"""
 
 
-def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate):
+def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
+           weight_init='xavier'):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     # adding layers
-    add_layer(number_of_neurons=16, context='relu', input_dim=784)
-    add_layer(number_of_neurons=8, context='relu')
-    add_layer(number_of_neurons=output_dim, context='softmax')
+    add_layer(number_of_neurons=16, context=activation, input_dim=784, weight_init=weight_init)
+    add_layer(number_of_neurons=8, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
 
     global gradient
     """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
@@ -181,4 +195,5 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     train(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, learning_rate=learning_rate)
 
 
-master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.0005)
+master(layers=3, neurons_in_each_layer=8, epochs=50, batch=32, output_dim=10, x=trainX, y=trainy, learning_rate=.0005,
+       weight_init='xavier', activaton='relu')
