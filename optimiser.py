@@ -29,6 +29,13 @@ class SimpleGradientDescent:
         if self.calls % 10 == 0:
             self.lrc += 1.0
 
+    # function for learning rate annealing
+    def anneal(self, loss):
+        # if loss increases decrease learning rate
+        if loss > self.hist_loss:
+            self.eta = self.eta / 2.0
+        self.hist_loss = loss
+
 
 # class for Momentum gradient descent
 class MomentumGradientDescent:
@@ -132,6 +139,13 @@ class NAG:
         if self.calls % 10 == 0:
             self.lrc += 1.0
 
+    # function for learning rate annealing
+    def anneal(self, loss):
+        # if loss increases decrease learning rate
+        if loss > self.hist_loss:
+            self.eta = self.eta / 2.0
+        self.hist_loss = loss
+
 
 class RMSProp:
     def __init__(self, eta, layers, beta):
@@ -180,6 +194,13 @@ class RMSProp:
         if self.calls % 10 == 0:
             self.lrc += 1.0
 
+    # function for learning rate annealing
+    def anneal(self, loss):
+        # if loss increases decrease learning rate
+        if loss > self.hist_loss:
+            self.eta = self.eta / 2.0
+        self.hist_loss = loss
+
 
 # class for ADAM: Reference: https://arxiv.org/pdf/1412.6980.pdf?source=post_page---------------------------
 """Using the previous gradients instead of the previous updates allows the algorithm to continue changing 
@@ -199,8 +220,10 @@ class ADAM:
         self.calls = 1
         # first moment vector m_t: defined as a decaying mean over the previous gradients
         self.momentum = None
+        self.t_momentum = None
         # second moment vector v_t
         self.second_momentum = None
+        self.t_second_momentum = None
         # epsilon
         self.eps = eps
         # historical loss, will be required for rate annealing
@@ -213,58 +236,62 @@ class ADAM:
             # copy the structure
             self.momentum = copy.deepcopy(gradient)
             self.second_momentum = copy.deepcopy(gradient)
-            # initialize momentums
             for i in range(self.layers):
                 # first momentum initialization
-                self.momentum[i]['weight'] = (1 - self.beta1) * gradient[i]['weight']
-                self.momentum[i]['bias'] = (1 - self.beta1) * gradient[i]['bias']
+                self.momentum[i]['weight'][:] = np.zeros_like(gradient[i]['weight'])
+                self.momentum[i]['bias'][:] = np.zeros_like(gradient[i]['bias'])
                 # second momentum initialization
-                self.second_momentum[i]['weight'] = (1 - self.beta2) * np.power(gradient[i]['weight'], 2)
-                self.second_momentum[i]['bias'] = (1 - self.beta2) * np.power(gradient[i]['bias'], 2)
-        else:
-            for i in range(self.layers):
-                # Update biased first moment estimate: Moving average of gradients
-                self.momentum[i]['weight'] = self.beta1 * self.momentum[i]['weight'] + (1 - self.beta1) * gradient[i][
-                    'weight']
-                self.momentum[i]['bias'] = self.beta1 * self.momentum[i]['bias'] + (1 - self.beta1) * gradient[i]['bias'
-                ]
-                # Update biased second raw moment estimate: rate adjusting parameter update similar to RMSProp
-                self.second_momentum[i]['weight'] = self.beta2 * self.second_momentum[i]['weight'] + (
-                            1 - self.beta2) * np.power(gradient[i][
-                                                           'weight'], 2)
-                self.second_momentum[i]['bias'] = self.beta2 * self.second_momentum[i]['bias'] + (
-                            1 - self.beta2) * np.power(gradient[i]['bias'
-                                                       ], 2)
-        # bias correction
-        for i in range(self.layers):
-            self.momentum[i]['weight'] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['weight']
-            self.momentum[i]['bias'] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias']
+                self.second_momentum[i]['weight'][:] = np.zeros_like(gradient[i]['weight'])
+                self.second_momentum[i]['bias'][:] = np.zeros_like(gradient[i]['bias'])
+            self.t_momentum = copy.deepcopy(self.momentum)
+            self.t_second_momentum = copy.deepcopy(self.second_momentum)
 
-            self.second_momentum[i]['weight'] = (1 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
+        for i in range(self.layers):
+            # Update biased first moment estimate: Moving average of gradients
+            self.momentum[i]['weight'] = self.beta1 * self.momentum[i]['weight'] + (1 - self.beta1) * gradient[i][
                 'weight']
-            self.second_momentum[i]['bias'] = (1 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i]['bias']
+            self.momentum[i]['bias'] = self.beta1 * self.momentum[i]['bias'] + (1 - self.beta1) * gradient[i]['bias'
+            ]
+            # Update biased second raw moment estimate: rate adjusting parameter update similar to RMSProp
+            self.second_momentum[i]['weight'] = self.beta2 * self.second_momentum[i]['weight'] + (
+                        1 - self.beta2) * np.power(gradient[i][
+                                                       'weight'], 2)
+            self.second_momentum[i]['bias'] = self.beta2 * self.second_momentum[i]['bias'] + (
+                        1 - self.beta2) * np.power(gradient[i]['bias'
+                                                   ], 2)
+        # bias correction
+        self.momentum[i]['weight']
+
+        for i in range(self.layers):
+            self.t_momentum[i]['weight'][:] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['weight']
+            self.t_momentum[i]['bias'][:] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias']
+
+            self.t_second_momentum[i]['weight'][:] = (1 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
+                'weight']
+            self.t_second_momentum[i]['bias'][:] = (1 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
+                'bias']
 
         # the descent
         for i in range(self.layers):
             # temporary variable for calculation
-            temp = np.sqrt(self.second_momentum[i]['weight'])
+            temp = np.sqrt(self.t_second_momentum[i]['weight'])
             # add epsilon to square root of temp
             temp_eps = temp + self.eps
             # inverse everything
             temp_inv = 1 / temp_eps
             # perform descent for weight
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, self.momentum[i]['weight']))
+                np.multiply(temp_inv, self.t_momentum[i]['weight']))
 
             # now we do the same for bias
             # temporary variable for calculation
-            temp = np.sqrt(self.second_momentum[i]['bias'])
+            temp = np.sqrt(self.t_second_momentum[i]['bias'])
             # add epsilon to square root of temp
             temp_eps = temp + self.eps
             # inverse everything
             temp_inv = 1 / temp_eps
             # perform descent for weight
-            network[i]['bias'] -= self.eta * np.multiply(temp_inv, self.momentum[i]['bias'])
+            network[i]['bias'] -= self.eta * np.multiply(temp_inv, self.t_momentum[i]['bias'])
 
         self.calls += 1
 
