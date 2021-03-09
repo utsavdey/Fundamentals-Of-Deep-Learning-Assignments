@@ -5,15 +5,26 @@ import sys
 def output_grad(y_hat, label):
     # grad w.r.t out activation
     temp = np.zeros_like(y_hat)
-    temp[label] = -1 / y_hat[label]
-    return temp
+    # If the initial guess is very wrong. This gradient will explode. This places a limit on that.
+    if y_hat[label] < 10 ** -8:
+        y_hat[label] = 10 ** -8
+    temp[label] = -1 / (y_hat[label])
+    norm = np.linalg.norm(temp)
+    if norm > 100.0:
+        return temp * 100.0 / norm
+    else:
+        return temp
 
 
 def last_grad(y_hat, label):
     # grad w.r.t out last layer
     temp = np.copy(y_hat)
     temp[label] = temp[label] - 1
-    return temp
+    norm = np.linalg.norm(temp)
+    if norm > 100.0:
+        return temp * 100.0 / norm
+    else:
+        return temp
 
 
 # this function helps in calculation of gradient w.r.t 'a_i''s when activation function is sigmoid.
@@ -44,20 +55,33 @@ def a_grad(network, transient_gradient, layer):
         active_grad_ = tanh_grad(network[layer]['a'])
     elif network[layer]['context'] == 'relu':
         active_grad_ = relu_grad(network[layer]['a'])
-    z = np.multiply(transient_gradient[layer]['h'], active_grad_)
-    return z
+    temp = np.multiply(transient_gradient[layer]['h'], active_grad_)
+    norm = np.linalg.norm(temp)
+    if norm > 100.0:
+        return temp * 100.0 / norm
+    else:
+        return temp
     # hadamard multiplication
 
 
 def h_grad(network, transient_gradient, layer):
     # grad w.r.t out h_i layer
     network[layer]['weight'].transpose()
-    z = network[layer + 1]['weight'].transpose() @ transient_gradient[layer + 1]['a']
-    return z
+    temp = network[layer + 1]['weight'].transpose() @ transient_gradient[layer + 1]['a']
+    norm = np.linalg.norm(temp)
+    if norm > 100.0:
+        return temp * 100.0 / norm
+    else:
+        return temp
 
 
 def w_grad(network, transient_gradient, layer, x):
     if layer == 0:
-        return transient_gradient[layer]['a'] @ x.transpose()
+        temp = transient_gradient[layer]['a'] @ x.transpose()
     else:
-        return transient_gradient[layer]['a'] @ network[layer - 1]['h'].transpose()
+        temp = transient_gradient[layer]['a'] @ network[layer - 1]['h'].transpose()
+    norm = np.linalg.norm(temp)
+    if norm > 10000.0:
+        return temp * 10000.0 / norm
+    else:
+        return temp
