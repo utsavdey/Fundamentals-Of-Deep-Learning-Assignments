@@ -208,6 +208,8 @@ class ADAM:
         self.second_momentum = None
         # epsilon
         self.eps = eps
+        # historical loss, will be required for rate annealing
+        self.hist_loss = sys.float_info.max
 
     # function for gradient descending
     def descent(self, network, gradient):
@@ -293,6 +295,8 @@ class NADAM:
         self.second_momentum = None
         # epsilon
         self.eps = eps
+        # historical loss, will be required for rate annealing
+        self.hist_loss = sys.float_info.max
 
     # function for gradient descending: Algorithm 2 Page 3
     def descent(self, network, gradient):
