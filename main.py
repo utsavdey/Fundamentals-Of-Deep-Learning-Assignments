@@ -6,6 +6,7 @@ from keras.datasets import fashion_mnist
 from loss import *
 from grad import *
 from activation import *
+from optimiser import *
 import wandb
 
 
@@ -116,12 +117,15 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate):
             # initiating loss for current epoch
             global loss
             loss = 0
+            if (isinstance(opt, NAG)):
+                opt.lookahead(network=network)
             # iterate over a batch
             for j in range(i, i + batch, 1):
                 # creating a single data vector and normalising color values between 0 to 1
                 x = datapoints[shuffler[j]].reshape(784, 1) / 255.0
                 y = labels[shuffler[j]]
                 forward_propagation(n, x)
+
                 backward_propagation(n, x, y, number_of_datapoint=batch, clean=clean)
                 clean = False
 
