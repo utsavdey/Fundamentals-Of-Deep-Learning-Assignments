@@ -8,7 +8,7 @@ def cross_entropy(label, softmax_output):
     return -np.log(softmax_output[label])
 
 
-def squared_error_loss(label, softmax_output):
+def squared_error(label, softmax_output):
     true_vector = np.zeros_like(softmax_output)
     true_vector[label] = 1
     size = float(len(softmax_output))

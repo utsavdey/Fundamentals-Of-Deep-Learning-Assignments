@@ -9,8 +9,6 @@ from activation import *
 from optimiser import *
 import wandb
 
-
-
 """ get training and testing vectors
     Number of Training Images = 60000
     Number of Testing Images = 10000 """
@@ -36,8 +34,8 @@ def forward_propagation(n, x):
         network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
 
 
-def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=False):
-    transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y)
+def backward_propagation(number_of_layers, x, y, number_of_datapoint, loss_type, clean=False):
+    transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y, loss_type=loss_type)
     transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['h'], y)
     for i in range(number_of_layers - 2, -1, -1):
         transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
@@ -69,14 +67,22 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, clean=Fals
 
 
 # this function is used for validation, useful during hyperparameter tuning or model change.
-def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
+def validate(number_of_layer, validateX, validateY, loss_type):
     loss = 0
     acc = 0
-    if loss_func == 'cross_entropy':
+    if loss_type == 'cross_entropy':
         for x, y in zip(validateX, validateY):
             forward_propagation(number_of_layer, x.reshape(784, 1) / 255.0)
             # adding loss w.r.t to a single datapoint
             loss += cross_entropy(label=y, softmax_output=network[number_of_layer - 1]['h'])
+            max_prob = np.argmax(network[number_of_layer - 1]['h'])
+            if max_prob == y:
+                acc += 1
+    elif loss_type == 'squared_error':
+        for x, y in zip(validateX, validateY):
+            forward_propagation(number_of_layer, x.reshape(784, 1) / 255.0)
+            # adding loss w.r.t to a single datapoint
+            loss += squared_error(label=y, softmax_output=network[number_of_layer - 1]['h'])
             max_prob = np.argmax(network[number_of_layer - 1]['h'])
             if max_prob == y:
                 acc += 1
@@ -86,7 +92,7 @@ def validate(number_of_layer, validateX, validateY, loss_func='cross_entropy'):
 
 
 # 1 epoch = 1 pass over the data
-def fit(datapoints, batch, epochs, labels, opt, f, learning_rate):
+def fit(datapoints, batch, epochs, labels, opt, f, learning_rate,loss_type):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -126,17 +132,19 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate):
                 y = labels[shuffler[j]]
                 forward_propagation(n, x)
 
-                backward_propagation(n, x, y, number_of_datapoint=batch, clean=clean)
+                backward_propagation(n, x, y, number_of_datapoint=batch, loss_type=loss_type, clean=clean)
                 clean = False
 
             opt.descent(network=network, gradient=gradient)
-            average_loss = validate(number_of_layer=n, validateX=validateX, validateY=validateY)
-            # printing average loss.
-            wandb.log({"accuracy": average_loss[1],'loss':average_loss[0][0]})
-            print(average_loss)
-            if np.isnan(average_loss[0])[0]:
-              return
+            validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,loss_type=loss_type)
+            training_result = validate(number_of_layer=n, validateX=datapoints, validateY=labels,loss_type=loss_type)
 
+            # printing average loss.
+            wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
+                       'train_accuracy': training_result[1], 'train_loss': training_result[0][0]})
+            print(validation_result, training_result)
+            if np.isnan(validation_result[0])[0]:
+                return
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -179,7 +187,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
     network.append(layer)
 
 
-"""master() is used to intialise all the learning parameters 
+"""master() is used to initialise all the learning parameters 
    in every layer and then start the training process"""
 
 
@@ -187,7 +195,7 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
            opt, weight_init='xavier'):
     n = neurons_in_each_layer
 
-    """intializing number of input features per datapoint as 784, 
+    """initializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     global network
@@ -202,14 +210,9 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     add_layer(number_of_neurons=66, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=16, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
-    print(network)
 
-
-    """Recursively make a copy of network. Changes made to the copy will not reflect in the original network."""
+    """Copying the structure of newly network variable"""
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate)
-
-
-
+        learning_rate=learning_rate,loss_type='cross_entropy')

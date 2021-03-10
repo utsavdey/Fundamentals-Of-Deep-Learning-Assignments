@@ -2,7 +2,7 @@ import numpy as np
 import sys
 
 
-def output_grad(y_hat, label):
+def cross_entropy_grad(y_hat, label):
     # grad w.r.t out activation
     temp = np.zeros_like(y_hat)
     # If the initial guess is very wrong. This gradient will explode. This places a limit on that.
@@ -14,6 +14,26 @@ def output_grad(y_hat, label):
         return temp * 100.0 / norm
     else:
         return temp
+
+
+def squared_error_grad(y_hat, label):
+    # grad w.r.t out activation
+    temp = np.copy(y_hat)
+    temp[label] -= 1
+    temp = 2 * temp
+    temp = temp / len(y_hat)
+    norm = np.linalg.norm(temp)
+    if norm > 100.0:
+        return temp * 100.0 / norm
+    else:
+        return temp
+
+
+def output_grad(y_hat, label, loss_type):
+    if loss_type == 'cross_entropy':
+        return cross_entropy_grad(y_hat=y_hat, label=label)
+    elif loss_type == 'squared_error':
+        return squared_error_grad(y_hat=y_hat, label=label)
 
 
 def last_grad(y_hat, label):
