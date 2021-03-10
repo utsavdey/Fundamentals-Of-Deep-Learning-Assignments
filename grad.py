@@ -27,14 +27,14 @@ def last_grad(y_hat, label):
         return temp
 
 
-# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is sigmoid.
-def sigmoid_grad(pre_activation_vector):
-    return np.multiply(pre_activation_vector, 1 - pre_activation_vector)
+# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is sigmoid.We have passed h_is
+def sigmoid_grad(post_activation):
+    return np.multiply(post_activation, 1 - post_activation)
 
 
-# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is tanh.
-def tanh_grad(pre_activation_vector):
-    return 1 - np.power(pre_activation_vector, 2)
+# this function helps in calculation of gradient w.r.t 'a_i''s when activation function is tanh. We have passed h_is
+def tanh_grad(post_activation):
+    return 1 - np.power(post_activation, 2)
 
 
 # this function helps in calculation of gradient w.r.t 'a_i''s when activation function is relu.
@@ -50,9 +50,9 @@ def relu_grad(pre_activation_vector):
 def a_grad(network, transient_gradient, layer):
     # grad w.r.t  a_i's layer
     if network[layer]['context'] == 'sigmoid':
-        active_grad_ = sigmoid_grad(network[layer]['a'])
+        active_grad_ = sigmoid_grad(network[layer]['h'])
     elif network[layer]['context'] == 'tanh':
-        active_grad_ = tanh_grad(network[layer]['a'])
+        active_grad_ = tanh_grad(network[layer]['h'])
     elif network[layer]['context'] == 'relu':
         active_grad_ = relu_grad(network[layer]['a'])
     temp = np.multiply(transient_gradient[layer]['h'], active_grad_)
