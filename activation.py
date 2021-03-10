@@ -25,7 +25,9 @@ def sigmoid(pre_activation_vector):
 # this function calculates softmax
 def softmax(pre_activation_vector):
     post_act = np.copy(pre_activation_vector)
-    post_act = np.exp(post_act)
+    # we are shifting the value of exponent because in case of large error, there can be nan problem,this is the fix
+    max_exponent = np.max(post_act)
+    post_act = np.exp(post_act - max_exponent)
     post_act = post_act / np.sum(post_act)
     return post_act
 
