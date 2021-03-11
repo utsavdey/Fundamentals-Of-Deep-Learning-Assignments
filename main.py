@@ -4,10 +4,10 @@
 import copy
 from keras.datasets import fashion_mnist
 import wandb
-from optimiser import *
-from activation import *
-from grad import *
 from loss import *
+from grad import *
+from activation import *
+from optimiser import *
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -146,7 +146,7 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
 
         # printing average loss.
         wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
-                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k})
+                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k+1})
 
         if np.isnan(validation_result[0])[0]:
             return
@@ -222,14 +222,14 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
         learning_rate=learning_rate, loss_type='cross_entropy')
 
-
+#hl_3_bs_16_ac_tanh
 def train():
     run = wandb.init()
-    wandb.run.name = wandb.run.id
+    wandb.run.name = 'bs_'+str(run.config.batch_size)+'_act_'+run.config.activation+'_opt_'+str(run.config.optimiser)+'_ini_'+str(run.config.weight_init)+'_epoch'+str(run.config.epoch)+'_lr_'+str(round(run.config.learning_rate,4))
     if run.config.optimiser == 'nag':
-        opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.80, weight_decay=run.config.weight_decay)
+        opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'rmsprop':
-        opti = RMSProp(layers=4, eta=run.config.learning_rate, beta=.80, weight_decay=run.config.weight_decay)
+        opti = RMSProp(layers=4, eta=run.config.learning_rate, beta=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'sgd':
         opti = SimpleGradientDescent(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'mom':
@@ -245,4 +245,3 @@ def train():
            y=trainy, learning_rate=.0005,
            opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2)
 
-wandb.agent(sweep_id='utsavdey/cs6910_assignment1/hstgturo', function=train)
