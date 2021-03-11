@@ -3,11 +3,11 @@
 
 import copy
 from keras.datasets import fashion_mnist
-from loss import *
-from grad import *
-from activation import *
-from optimiser import *
 import wandb
+from optimiser import *
+from activation import *
+from grad import *
+from loss import *
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -137,15 +137,12 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
                 clean = False
 
             opt.descent(network=network, gradient=gradient)
-            validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
-                                         loss_type=loss_type)
-            print(validation_result, training_result)
 
         # for wandb logging
         validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
                                      loss_type=loss_type)
-        training_result = validate(number_of_layer=n, validateX=datapoints[i, i + batch],
-                                   validateY=labels[i, i + batch], loss_type=loss_type)
+        training_result = validate(number_of_layer=n, validateX=datapoints,
+                                   validateY=labels, loss_type=loss_type)
 
         # printing average loss.
         wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
@@ -200,7 +197,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
 
 
 def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
-           opt, weight_init='xavier'):
+           opt,layer_1 ,layer_2 ,layer_3,weight_init='xavier'):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
@@ -213,10 +210,10 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = []
     transient_gradient = []
     # adding layers
-    add_layer(number_of_neurons=32, context=activation, input_dim=784, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_1, context=activation, input_dim=784, weight_init=weight_init)
     # creating hidden layers
-    add_layer(number_of_neurons=66, context=activation, weight_init=weight_init)
-    add_layer(number_of_neurons=16, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_2, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_3, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
 
     """Copying the structure of network."""
@@ -246,7 +243,6 @@ def train():
     master(layers=4, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
            x=trainX,
            y=trainy, learning_rate=.0005,
-           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation)
+           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2)
 
-
-wandb.agent(sweep_id='fwxtkhkk', function=train)
+wandb.agent(sweep_id='utsavdey/cs6910_assignment1/hstgturo', function=train)
