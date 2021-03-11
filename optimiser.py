@@ -114,8 +114,8 @@ class NAG:
         else:
             # update the gradient using momentum
             for i in range(self.layers):
-                network[i]['weight'] -= self.momentum[i]['weight']
-                network[i]['bias'] -= self.momentum[i]['bias']
+                network[i]['weight'] -= self.gamma * self.momentum[i]['weight']
+                network[i]['bias'] -= self.gamma * self.momentum[i]['bias']
 
     # function for gradient descending
     def descent(self, network, gradient):
@@ -387,7 +387,7 @@ class NADAM:
             temp_inv = 1 / temp
             # perform descent for weight
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, m_t_hat[i]['weight']))- self.weight_decay*network[i]['weight']
+                np.multiply(temp_inv, m_t_hat[i]['weight']))- (self.eta * self.weight_decay*network[i]['weight'])
 
             # now we do the same for bias
             # temporary variable for calculation
