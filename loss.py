@@ -5,6 +5,8 @@ import numpy as np
 # calculate cross entropy
 def cross_entropy(label, softmax_output):
     # as we have only one true label, we have simplified the function for faster calculation.
+    if softmax_output[label] <10**-8:
+      return -np.log(10**-8)
     return -np.log(softmax_output[label])
 
 
