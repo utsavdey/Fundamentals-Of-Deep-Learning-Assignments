@@ -20,7 +20,7 @@ network = []
 gradient = []
 # store gradient w.r.t a single datapoint
 transient_gradient = []
-# will contain the total amount of loss for each timestep(1). timestep defined during lecture.
+# will contain the total amount of loss for each timestep(1). One timestep is defined as one update of the parameters.
 loss = 0
 
 
@@ -31,7 +31,7 @@ def forward_propagation(n, x):
         else:
             network[i]['a'] = network[i]['weight'] @ network[i - 1]['h'] + network[i]['bias']
 
-        network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])  # last layer
+        network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])
 
 
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, loss_type, clean=False):
@@ -195,7 +195,7 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
            opt, weight_init='xavier'):
     n = neurons_in_each_layer
 
-    """initializing number of input features per datapoint as 784, 
+    """intializing number of input features per datapoint as 784, 
        since dataset consists of 28x28 pixel grayscale images """
     n_features = 784
     global network
@@ -211,7 +211,7 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     add_layer(number_of_neurons=16, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
 
-    """Copying the structure of newly network variable"""
+    """Copying the structure of network."""
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,

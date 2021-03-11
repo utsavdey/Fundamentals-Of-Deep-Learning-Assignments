@@ -25,9 +25,9 @@ class SimpleGradientDescent:
     # function for gradient descending
     def descent(self, network, gradient):
         for i in range(self.layers):
-            network[i]['weight'] = network[i]['weight'] - self.eta / self.lrc * gradient[i][
-                'weight'] - self.weight_decay * network[i]['weight']
-            network[i]['bias'] -= self.eta / self.lrc * gradient[i]['bias']
+            network[i]['weight'] = network[i]['weight'] - ((self.eta / self.lrc) * gradient[i][
+                'weight']) - (self.eta * self.weight_decay * network[i]['weight'])
+            network[i]['bias'] -= ((self.eta / self.lrc) * gradient[i]['bias'])
         self.calls += 1
         if self.calls % 10 == 0:
             self.lrc += 1.0
@@ -69,17 +69,17 @@ class MomentumGradientDescent:
             self.momentum = copy.deepcopy(gradient)
             # initialize momentum- refer above lecture slide 36
             for i in range(self.layers):
-                self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
-                self.momentum[i]['bias'] = self.eta * gradient[i]['bias']
+                self.momentum[i]['weight'] = (self.eta / self.lrc) * gradient[i]['weight']
+                self.momentum[i]['bias'] = (self.eta / self.lrc) * gradient[i]['bias']
         else:
             # update momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + self.eta * gradient[i]['weight']
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + self.eta * gradient[i]['bias']
+                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + (self.eta/self.lrc) * gradient[i]['weight']
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (self.eta/self.lrc) * gradient[i]['bias']
         # the descent
         for i in range(self.layers):
-            network[i]['weight'] = network[i]['weight'] - self.momentum[i]['weight'] - self.weight_decay * network[i][
-                'weight']
+            network[i]['weight'] = network[i]['weight'] - self.momentum[i]['weight'] - ((self.eta/self.lrc) * self.weight_decay * network[i][
+                'weight'])
             network[i]['bias'] -= self.momentum[i]['bias']
 
         self.calls += 1
@@ -122,8 +122,8 @@ class NAG:
 
         # the descent
         for i in range(self.layers):
-            network[i]['weight'] = network[i]['weight'] - self.eta / self.lrc * gradient[i][
-                'weight'] - self.weight_decay * network[i]['weight']
+            network[i]['weight'] = network[i]['weight'] - ((self.eta / self.lrc) * gradient[i][
+                'weight']) - ((self.eta / self.lrc) * self.weight_decay * network[i]['weight'])
             network[i]['bias'] -= self.eta * gradient[i]['bias']
 
         gamma = min(1 - 2 ** (-1 - math.log((self.calls / 250.0) + 1, 2)), self.gamma)
@@ -135,14 +135,14 @@ class NAG:
             self.momentum = copy.deepcopy(gradient)
             # initialize momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = self.eta * gradient[i]['weight']
-                self.momentum[i]['bias'] = self.eta * gradient[i]['bias']
+                self.momentum[i]['weight'] = (self.eta / self.lrc) * gradient[i]['weight']
+                self.momentum[i]['bias'] = (self.eta / self.lrc)* gradient[i]['bias']
         else:
             # update momentum: http://cse.iitm.ac.in/~miteshk/CS7015/Slides/Teaching/pdf/Lecture5.pdf , slide: 46
             for i in range(self.layers):
-                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + self.eta / self.lrc * gradient[i][
-                    'weight']
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + self.eta / self.lrc * gradient[i]['bias']
+                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + ((self.eta / self.lrc) * gradient[i][
+                    'weight'])
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + ((self.eta / self.lrc) * gradient[i]['bias'])
 
         self.calls += 1
         if self.calls % 10 == 0:
@@ -155,7 +155,8 @@ class NAG:
             self.eta = self.eta / 2.0
         self.hist_loss = loss
 
-
+"""As mentioned in this paper: https://arxiv.org/pdf/1609.04747.pdf 
+RMSProp, ADAM and NADAM have adaptive learning rates so they do not need a lrc"""
 class RMSProp:
     def __init__(self, eta, layers, beta, weight_decay=0.0):
         # learning rate
@@ -172,8 +173,6 @@ class RMSProp:
         self.epsilon = 0.001
         # to implement update rule for RMSProp
         self.update = None
-        # learning rate controller
-        self.lrc = 1.0
         # weight decay
         self.weight_decay = weight_decay
 
@@ -202,8 +201,6 @@ class RMSProp:
                 (self.eta / np.sqrt(self.update[i]['bias'] + self.epsilon)), gradient[i]['bias'])
 
         self.calls += 1
-        if self.calls % 10 == 0:
-            self.lrc += 1.0
 
     # function for learning rate annealing
     def anneal(self, loss):
@@ -273,8 +270,6 @@ class ADAM:
                     1 - self.beta2) * np.power(gradient[i]['bias'
                                                ], 2)
         # bias correction
-        self.momentum[i]['weight']
-
         for i in range(self.layers):
             self.t_momentum[i]['weight'][:] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['weight']
             self.t_momentum[i]['bias'][:] = (1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias']
@@ -292,9 +287,9 @@ class ADAM:
             temp_eps = temp + self.eps
             # inverse everything
             temp_inv = 1 / temp_eps
-            # perform descent for weight
+            # perform descent: Update rule for weight along with l2 regularisation
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, self.t_momentum[i]['weight']))- self.weight_decay*network[i]['weight']
+                np.multiply(temp_inv, self.t_momentum[i]['weight']))- (self.eta *self.weight_decay*network[i]['weight'])
 
             # now we do the same for bias
             # temporary variable for calculation
@@ -370,16 +365,18 @@ class NADAM:
                         1 - self.beta2) * np.power(gradient[i]['bias'
                                                    ], 2)
         # bias correction
+        m_t_hat=copy.deepcopy(self.momentum)
+        v_t_hat=copy.deepcopy(self.second_momentum)
         for i in range(self.layers):
-            self.momentum[i]['weight'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i][
+            m_t_hat[i]['weight'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i][
                 'weight'] + ((1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['weight']
-            self.momentum[i]['bias'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias'] + (
-                    (1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['bias']
+            m_t_hat[i]['bias'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias'] + (
+                        (1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['bias']
 
-            self.second_momentum[i]['weight'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * \
+            v_t_hat[i]['weight'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * \
                                                 self.second_momentum[i][
                                                     'weight']
-            self.second_momentum[i]['bias'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
+            v_t_hat[i]['bias'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
                 'bias']
 
         # the descent
@@ -390,7 +387,7 @@ class NADAM:
             temp_inv = 1 / temp
             # perform descent for weight
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, self.momentum[i]['weight']))
+                np.multiply(temp_inv, m_t_hat[i]['weight']))- self.weight_decay*network[i]['weight']
 
             # now we do the same for bias
             # temporary variable for calculation
@@ -398,7 +395,7 @@ class NADAM:
             # inverse everything
             temp_inv = 1 / temp
             # perform descent for weight
-            network[i]['bias'] -= self.eta * np.multiply(temp_inv, self.momentum[i]['bias'])
+            network[i]['bias'] -= self.eta * np.multiply(temp_inv, v_t_hat[i]['bias'])
 
         self.calls += 1
         # function for learning rate annealing
