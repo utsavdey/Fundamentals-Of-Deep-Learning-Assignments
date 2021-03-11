@@ -35,7 +35,8 @@ def forward_propagation(n, x):
 
 
 def backward_propagation(number_of_layers, x, y, number_of_datapoint, loss_type, clean=False):
-    transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y, loss_type=loss_type)
+    transient_gradient[number_of_layers - 1]['h'] = output_grad(network[number_of_layers - 1]['h'], y,
+                                                                loss_type=loss_type)
     transient_gradient[number_of_layers - 1]['a'] = last_grad(network[number_of_layers - 1]['h'], y)
     for i in range(number_of_layers - 2, -1, -1):
         transient_gradient[i]['h'] = h_grad(network=network, transient_gradient=transient_gradient, layer=i)
@@ -92,7 +93,7 @@ def validate(number_of_layer, validateX, validateY, loss_type):
 
 
 # 1 epoch = 1 pass over the data
-def fit(datapoints, batch, epochs, labels, opt, f, learning_rate,loss_type):
+def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -123,7 +124,7 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate,loss_type):
             # initiating loss for current epoch
             global loss
             loss = 0
-            if (isinstance(opt, NAG)):
+            if isinstance(opt, NAG):
                 opt.lookahead(network=network)
             # iterate over a batch
             for j in range(i, i + batch, 1):
@@ -136,15 +137,22 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate,loss_type):
                 clean = False
 
             opt.descent(network=network, gradient=gradient)
-            validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,loss_type=loss_type)
-            training_result = validate(number_of_layer=n, validateX=datapoints, validateY=labels,loss_type=loss_type)
-
-            # printing average loss.
-            wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
-                       'train_accuracy': training_result[1], 'train_loss': training_result[0][0]})
+            validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
+                                         loss_type=loss_type)
             print(validation_result, training_result)
-            if np.isnan(validation_result[0])[0]:
-                return
+
+        # for wandb logging
+        validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
+                                     loss_type=loss_type)
+        training_result = validate(number_of_layer=n, validateX=datapoints[i, i + batch],
+                                   validateY=labels[i, i + batch], loss_type=loss_type)
+
+        # printing average loss.
+        wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
+                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k})
+
+        if np.isnan(validation_result[0])[0]:
+            return
 
 
 """ Adds a particular on top of previous layer , the layers are built in a incremental way.
@@ -215,4 +223,30 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate,loss_type='cross_entropy')
+        learning_rate=learning_rate, loss_type='cross_entropy')
+
+
+def train():
+    run = wandb.init()
+    wandb.run.name = wandb.run.id
+    if run.config.optimiser == 'nag':
+        opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.80, weight_decay=run.config.weight_decay)
+    elif run.config.optimiser == 'rmsprop':
+        opti = RMSProp(layers=4, eta=run.config.learning_rate, beta=.80, weight_decay=run.config.weight_decay)
+    elif run.config.optimiser == 'sgd':
+        opti = SimpleGradientDescent(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
+    elif run.config.optimiser == 'mom':
+        opti = MomentumGradientDescent(layers=4, eta=run.config.learning_rate, gamma=.99,
+                                       weight_decay=run.config.weight_decay)
+    elif run.config.optimiser == 'adam':
+        opti = ADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
+    elif run.config.optimiser == 'nadam':
+        opti = NADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
+
+    master(layers=4, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
+           x=trainX,
+           y=trainy, learning_rate=.0005,
+           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation)
+
+
+wandb.agent(sweep_id='fwxtkhkk', function=train)
