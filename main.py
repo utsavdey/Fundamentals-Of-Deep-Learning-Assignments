@@ -8,6 +8,7 @@ from optimiser import *
 from activation import *
 from grad import *
 from loss import *
+import pickle
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -197,7 +198,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
 
 
 def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
-           opt,layer_1 ,layer_2 ,layer_3,weight_init='xavier'):
+           opt,layer_1 ,layer_2 ,layer_3,loss,weight_init='xavier'):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
@@ -220,12 +221,14 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate, loss_type='cross_entropy')
+        learning_rate=learning_rate, loss_type=loss)
 
 
 def train():
     run = wandb.init()
-    wandb.run.name = wandb.run.id
+    wandb.run.name = 'bs_' + str(run.config.batch_size) + '_act_' + run.config.activation + '_opt_' + str(
+        run.config.optimiser) + '_ini_' + str(run.config.weight_init) + '_epoch' + str(run.config.epoch) + '_lr_' + str(
+        round(run.config.learning_rate, 4)) + '_loss_' + str(run.config.loss)
     if run.config.optimiser == 'nag':
         opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.80, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'rmsprop':
@@ -243,6 +246,9 @@ def train():
     master(layers=4, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
            x=trainX,
            y=trainy, learning_rate=.0005,
-           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2)
+           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2,loss=run.config.loss)
 
-wandb.agent(sweep_id='utsavdey/cs6910_assignment1/hstgturo', function=train)
+wandb.agent(sweep_id='utsavdey/Compare_Loss_Function/yhbodey6', function=train)
+
+filename_model = 'neural_network.object'
+pickle.dump(network, open(filename_model, 'wb'))  # store best model's  object to disk

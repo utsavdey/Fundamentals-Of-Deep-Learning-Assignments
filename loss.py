@@ -14,4 +14,4 @@ def squared_error(label, softmax_output):
     true_vector = np.zeros_like(softmax_output)
     true_vector[label] = 1
     size = float(len(softmax_output))
-    return (np.linalg.norm(true_vector - softmax_output) ** 2) / size
+    return np.array([(np.linalg.norm(true_vector - softmax_output) ** 2) / size]).reshape((1,1))
