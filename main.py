@@ -3,11 +3,11 @@
 
 import copy
 from keras.datasets import fashion_mnist
+import wandb
 from loss import *
 from grad import *
 from activation import *
 from optimiser import *
-import wandb
 
 """ get training and testing vectors
     Number of Training Images = 60000
@@ -137,19 +137,16 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
                 clean = False
 
             opt.descent(network=network, gradient=gradient)
-            validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
-                                         loss_type=loss_type)
-            print(validation_result, training_result)
 
         # for wandb logging
         validation_result = validate(number_of_layer=n, validateX=validateX, validateY=validateY,
                                      loss_type=loss_type)
-        training_result = validate(number_of_layer=n, validateX=datapoints[i, i + batch],
-                                   validateY=labels[i, i + batch], loss_type=loss_type)
+        training_result = validate(number_of_layer=n, validateX=datapoints,
+                                   validateY=labels, loss_type=loss_type)
 
         # printing average loss.
         wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
-                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k})
+                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k+1})
 
         if np.isnan(validation_result[0])[0]:
             return
@@ -200,7 +197,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
 
 
 def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
-           opt, weight_init='xavier'):
+           opt,layer_1 ,layer_2 ,layer_3,weight_init='xavier'):
     n = neurons_in_each_layer
 
     """intializing number of input features per datapoint as 784, 
@@ -213,10 +210,10 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     gradient = []
     transient_gradient = []
     # adding layers
-    add_layer(number_of_neurons=32, context=activation, input_dim=784, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_1, context=activation, input_dim=784, weight_init=weight_init)
     # creating hidden layers
-    add_layer(number_of_neurons=66, context=activation, weight_init=weight_init)
-    add_layer(number_of_neurons=16, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_2, context=activation, weight_init=weight_init)
+    add_layer(number_of_neurons=layer_3, context=activation, weight_init=weight_init)
     add_layer(number_of_neurons=output_dim, context='softmax', weight_init=weight_init)
 
     """Copying the structure of network."""
@@ -225,14 +222,14 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
         learning_rate=learning_rate, loss_type='cross_entropy')
 
-
+#hl_3_bs_16_ac_tanh
 def train():
     run = wandb.init()
-    wandb.run.name = wandb.run.id
+    wandb.run.name = 'bs_'+str(run.config.batch_size)+'_act_'+run.config.activation+'_opt_'+str(run.config.optimiser)+'_ini_'+str(run.config.weight_init)+'_epoch'+str(run.config.epoch)+'_lr_'+str(round(run.config.learning_rate,4))
     if run.config.optimiser == 'nag':
-        opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.80, weight_decay=run.config.weight_decay)
+        opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'rmsprop':
-        opti = RMSProp(layers=4, eta=run.config.learning_rate, beta=.80, weight_decay=run.config.weight_decay)
+        opti = RMSProp(layers=4, eta=run.config.learning_rate, beta=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'sgd':
         opti = SimpleGradientDescent(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'mom':
@@ -246,7 +243,5 @@ def train():
     master(layers=4, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
            x=trainX,
            y=trainy, learning_rate=.0005,
-           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation)
+           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2)
 
-
-wandb.agent(sweep_id='fwxtkhkk', function=train)
