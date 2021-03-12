@@ -1,19 +1,19 @@
 """Implement Feed Forward neural network where the parameters are
    number of hidden layers and number of neurons in each hidden layer"""
-
-import copy
-from keras.datasets import fashion_mnist
-import wandb
 from loss import *
 from grad import *
 from activation import *
 from optimiser import *
-import pickle
+import copy
+from keras.datasets import fashion_mnist
+from keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+import wandb
 
 """ get training and testing vectors
     Number of Training Images = 60000
     Number of Testing Images = 10000 """
-(trainX, trainy), (testX, testy) = fashion_mnist.load_data()
+(trainX, trainY), (testX, testY) = fashion_mnist.load_data()
 
 last = 2
 # network is a list of all the learning parameters in every layer and gradient is its copy
@@ -70,13 +70,13 @@ def backward_propagation(number_of_layers, x, y, number_of_datapoint, loss_type,
 
 # this function is used for validation, useful during hyperparameter tuning or model change.
 def validate(number_of_layer, validateX, validateY, loss_type):
-    loss = 0
+    loss_local = 0
     acc = 0
     if loss_type == 'cross_entropy':
         for x, y in zip(validateX, validateY):
             forward_propagation(number_of_layer, x.reshape(784, 1) / 255.0)
             # adding loss w.r.t to a single datapoint
-            loss += cross_entropy(label=y, softmax_output=network[number_of_layer - 1]['h'])
+            loss_local += cross_entropy(label=y, softmax_output=network[number_of_layer - 1]['h'])
             max_prob = np.argmax(network[number_of_layer - 1]['h'])
             if max_prob == y:
                 acc += 1
@@ -84,17 +84,34 @@ def validate(number_of_layer, validateX, validateY, loss_type):
         for x, y in zip(validateX, validateY):
             forward_propagation(number_of_layer, x.reshape(784, 1) / 255.0)
             # adding loss w.r.t to a single datapoint
-            loss += squared_error(label=y, softmax_output=network[number_of_layer - 1]['h'])
+            loss_local += squared_error(label=y, softmax_output=network[number_of_layer - 1]['h'])
             max_prob = np.argmax(network[number_of_layer - 1]['h'])
             if max_prob == y:
                 acc += 1
-    average_loss = loss / float(len(validateX))
+    average_loss = loss_local / float(len(validateX))
     acc = acc / float(len(validateX))
     return [average_loss, acc]
 
 
+def augment_my_data(datapoints, labels, d, newSize):
+    dataGenerator = ImageDataGenerator(rotation_range=15, shear_range=0.1, zoom_range=0.2, width_shift_range=0.1,
+                                       height_shift_range=0.1, horizontal_flip=True, fill_mode='nearest')
+    new_data = []
+    new_label = []
+    datapoints = datapoints.reshape((d, 28, 28, 1))
+    i = 0
+    for (data, label) in dataGenerator.flow(datapoints, labels, batch_size=1):
+        new_data.append(data.reshape(28, 28))
+        new_label.append(label)
+        i += 1
+        if i > newSize:
+            break
+
+    return np.array(new_data), np.array(new_label), newSize
+
+
 # 1 epoch = 1 pass over the data
-def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
+def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type, augment):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -111,6 +128,10 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
     labels = labels[:border]
     # updating d
     d = border
+    # augmenting my datapoints
+    if augment is not None:
+        (datapoints, labels, d) = augment_my_data(datapoints=datapoints, labels=labels, d=d, newSize=d + augment * batch)
+
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
     # creating simple gradient descent optimiser
@@ -147,7 +168,7 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type):
 
         # printing average loss.
         wandb.log({"val_accuracy": validation_result[1], 'val_loss': validation_result[0][0],
-                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k+1})
+                   'train_accuracy': training_result[1], 'train_loss': training_result[0][0], 'epoch': k + 1})
 
         if np.isnan(validation_result[0])[0]:
             return
@@ -197,12 +218,11 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
    in every layer and then start the training process"""
 
 
-def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learning_rate, activation,
-           opt,layer_1 ,layer_2 ,layer_3,loss,weight_init='xavier'):
-    n = neurons_in_each_layer
-
-    """intializing number of input features per datapoint as 784, 
-       since dataset consists of 28x28 pixel grayscale images """
+def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, layer_2, layer_3, weight_init='xavier',
+           augment=None):
+    """initializing number of input features per datapoint as 784,
+       since dataset consists of 28x28 pixel grayscale images
+       :param augment: """
     n_features = 784
     global network
     global gradient
@@ -220,17 +240,16 @@ def master(layers, neurons_in_each_layer, batch, epochs, output_dim, x, y, learn
     """Copying the structure of network."""
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
-    fit(datapoints=trainX, labels=trainy, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate, loss_type=loss)
+    fit(datapoints=trainX, labels=trainY, batch=batch, epochs=epochs, f=n_features, opt=opt,
+        learning_rate=learning_rate, loss_type='cross_entropy',augment=augment)
 
-#hl_3_bs_16_ac_tanh
+
 def train():
     run = wandb.init()
-
-    wandb.run.name = 'bs_' + str(run.config.batch_size) + '_act_' + run.config.activation + '_opt_' + str(
+    opti = None
+    wandb.run.name = 'augmented_bs_' + str(run.config.batch_size) + '_act_' + run.config.activation + '_opt_' + str(
         run.config.optimiser) + '_ini_' + str(run.config.weight_init) + '_epoch' + str(run.config.epoch) + '_lr_' + str(
-        round(run.config.learning_rate, 4)) + '_loss_' + str(run.config.loss)
-
+        round(run.config.learning_rate, 4))
     if run.config.optimiser == 'nag':
         opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'rmsprop':
@@ -245,14 +264,6 @@ def train():
     elif run.config.optimiser == 'nadam':
         opti = NADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
 
-    master(layers=4, neurons_in_each_layer=8, epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
-           x=trainX,
-           y=trainy, learning_rate=.0005,
-           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation,layer_1=run.config.layer_1,layer_3=run.config.layer_3,layer_2=run.config.layer_2,loss=run.config.loss)
-
-
-wandb.agent(sweep_id='utsavdey/Compare_Loss_Function/yhbodey6', function=train)
-
-filename_model = 'neural_network.object'
-pickle.dump(network, open(filename_model, 'wb'))  # store best model's  object to disk
-
+    master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10, learning_rate=.0005,
+           opt=opti, weight_init=run.config.weight_init, activation=run.config.activation, layer_1=run.config.layer_1,
+           layer_3=run.config.layer_3, layer_2=run.config.layer_2, augment=100)

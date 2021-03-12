@@ -32,13 +32,6 @@ class SimpleGradientDescent:
         if self.calls % 10 == 0:
             self.lrc += 1.0
 
-    # function for learning rate annealing
-    def anneal(self, loss):
-        # if loss increases decrease learning rate
-        if loss > self.hist_loss:
-            self.eta = self.eta / 2.0
-        self.hist_loss = loss
-
 
 # class for Momentum gradient descent
 class MomentumGradientDescent:
@@ -74,12 +67,15 @@ class MomentumGradientDescent:
         else:
             # update momentum
             for i in range(self.layers):
-                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + (self.eta/self.lrc) * gradient[i]['weight']
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (self.eta/self.lrc) * gradient[i]['bias']
+                self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + (self.eta / self.lrc) * gradient[i][
+                    'weight']
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (self.eta / self.lrc) * gradient[i][
+                    'bias']
         # the descent
         for i in range(self.layers):
-            network[i]['weight'] = network[i]['weight'] - self.momentum[i]['weight'] - ((self.eta/self.lrc) * self.weight_decay * network[i][
-                'weight'])
+            network[i]['weight'] = network[i]['weight'] - self.momentum[i]['weight'] - (
+                        (self.eta / self.lrc) * self.weight_decay * network[i][
+                    'weight'])
             network[i]['bias'] -= self.momentum[i]['bias']
 
         self.calls += 1
@@ -136,27 +132,24 @@ class NAG:
             # initialize momentum
             for i in range(self.layers):
                 self.momentum[i]['weight'] = (self.eta / self.lrc) * gradient[i]['weight']
-                self.momentum[i]['bias'] = (self.eta / self.lrc)* gradient[i]['bias']
+                self.momentum[i]['bias'] = (self.eta / self.lrc) * gradient[i]['bias']
         else:
             # update momentum: http://cse.iitm.ac.in/~miteshk/CS7015/Slides/Teaching/pdf/Lecture5.pdf , slide: 46
             for i in range(self.layers):
                 self.momentum[i]['weight'] = gamma * self.momentum[i]['weight'] + ((self.eta / self.lrc) * gradient[i][
                     'weight'])
-                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + ((self.eta / self.lrc) * gradient[i]['bias'])
+                self.momentum[i]['bias'] = gamma * self.momentum[i]['bias'] + (
+                            (self.eta / self.lrc) * gradient[i]['bias'])
 
         self.calls += 1
         if self.calls % 10 == 0:
             self.lrc += 1.0
 
-    # function for learning rate annealing
-    def anneal(self, loss):
-        # if loss increases decrease learning rate
-        if loss > self.hist_loss:
-            self.eta = self.eta / 2.0
-        self.hist_loss = loss
 
 """As mentioned in this paper: https://arxiv.org/pdf/1609.04747.pdf 
 RMSProp, ADAM and NADAM have adaptive learning rates so they do not need a lrc"""
+
+
 class RMSProp:
     def __init__(self, eta, layers, beta, weight_decay=0.0):
         # learning rate
@@ -196,18 +189,12 @@ class RMSProp:
         # Now we use the update rule for RMSProp
         for i in range(self.layers):
             network[i]['weight'] = network[i]['weight'] - np.multiply(
-                (self.eta / np.sqrt(self.update[i]['weight'] + self.epsilon)), gradient[i]['weight']) - self.weight_decay*network[i]['weight']
+                (self.eta / np.sqrt(self.update[i]['weight'] + self.epsilon)),
+                gradient[i]['weight']) - self.weight_decay * network[i]['weight']
             network[i]['bias'] = network[i]['bias'] - np.multiply(
                 (self.eta / np.sqrt(self.update[i]['bias'] + self.epsilon)), gradient[i]['bias'])
 
         self.calls += 1
-
-    # function for learning rate annealing
-    def anneal(self, loss):
-        # if loss increases decrease learning rate
-        if loss > self.hist_loss:
-            self.eta = self.eta / 2.0
-        self.hist_loss = loss
 
 
 # class for ADAM: Reference: https://arxiv.org/pdf/1412.6980.pdf?source=post_page---------------------------
@@ -289,7 +276,8 @@ class ADAM:
             temp_inv = 1 / temp_eps
             # perform descent: Update rule for weight along with l2 regularisation
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, self.t_momentum[i]['weight']))- (self.eta *self.weight_decay*network[i]['weight'])
+                np.multiply(temp_inv, self.t_momentum[i]['weight'])) - (
+                                               self.eta * self.weight_decay * network[i]['weight'])
 
             # now we do the same for bias
             # temporary variable for calculation
@@ -302,13 +290,6 @@ class ADAM:
             network[i]['bias'] -= self.eta * np.multiply(temp_inv, self.t_momentum[i]['bias'])
 
         self.calls += 1
-
-    # function for learning rate annealing
-    def anneal(self, loss):
-        # if loss increases decrease learning rate
-        if loss > self.hist_loss:
-            self.eta = self.eta / 2.0
-        self.hist_loss = loss
 
 
 # Reference: https://openreview.net/pdf?id=OM0jvwB8jIp57ZJjtNEZ
@@ -365,17 +346,17 @@ class NADAM:
                         1 - self.beta2) * np.power(gradient[i]['bias'
                                                    ], 2)
         # bias correction
-        m_t_hat=copy.deepcopy(self.momentum)
-        v_t_hat=copy.deepcopy(self.second_momentum)
+        m_t_hat = copy.deepcopy(self.momentum)
+        v_t_hat = copy.deepcopy(self.second_momentum)
         for i in range(self.layers):
             m_t_hat[i]['weight'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i][
                 'weight'] + ((1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['weight']
             m_t_hat[i]['bias'] = (self.beta1 / (1 - (self.beta1 ** self.calls))) * self.momentum[i]['bias'] + (
-                        (1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['bias']
+                    (1 - self.beta1) / (1 - (self.beta1 ** self.calls))) * gradient[i]['bias']
 
             v_t_hat[i]['weight'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * \
-                                                self.second_momentum[i][
-                                                    'weight']
+                                   self.second_momentum[i][
+                                       'weight']
             v_t_hat[i]['bias'] = (self.beta2 / (1 - (self.beta2 ** self.calls))) * self.second_momentum[i][
                 'bias']
 
@@ -387,7 +368,7 @@ class NADAM:
             temp_inv = 1 / temp
             # perform descent for weight
             network[i]['weight'] = network[i]['weight'] - self.eta * (
-                np.multiply(temp_inv, m_t_hat[i]['weight']))- (self.eta * self.weight_decay*network[i]['weight'])
+                np.multiply(temp_inv, m_t_hat[i]['weight'])) - (self.eta * self.weight_decay * network[i]['weight'])
 
             # now we do the same for bias
             # temporary variable for calculation
@@ -399,9 +380,3 @@ class NADAM:
 
         self.calls += 1
         # function for learning rate annealing
-
-    def anneal(self, loss):
-        # if loss increases decrease learning rate
-        if loss > self.hist_loss:
-            self.eta = self.eta / 2.0
-        self.hist_loss = loss
