@@ -4,7 +4,7 @@ from keras.datasets import fashion_mnist
 import wandb
 # from wandb.keras import WandbCallback
 
-wandb.init(project="MNIST_report",id="Question_1")
+wandb.init(project="Fashion-MNIST-Images",id="Question-1")
 class_names = ['T-shirt/top', 'Trouser/pants', 'Pullover shirt', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag',
 			   'Ankle boot']
 
