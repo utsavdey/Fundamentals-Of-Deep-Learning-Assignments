@@ -1,5 +1,4 @@
 import numpy as np
-import sys
 
 
 def cross_entropy_grad(y_hat, label):
