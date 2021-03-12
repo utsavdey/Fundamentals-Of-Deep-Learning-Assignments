@@ -6,12 +6,10 @@ import math
 import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
-import wandb
 
 # load the trained network
 filename_model = 'neural_network.object'
 network = loaded_model = pickle.load(open(filename_model, 'rb'))
-print(network)
 
 
 (trainX, trainy), (testX, testy) = fashion_mnist.load_data()
@@ -77,8 +75,6 @@ def forward_propagation(n, x):
 
         network[i]['h'] = activation_function(network[i]['a'], context=network[i]['context'])
 
-def y_fmt(x, y):
-    return '{:2.2e}'.format(x).replace('e', 'x10^')
 
 # Reference: https://github.com/zalandoresearch/fashion-mnist/blob/master/README.md#Labels
 cm_plot_labels = ['Top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag',
@@ -99,12 +95,13 @@ def predict_label(number_of_layer):
 						 columns=[i for i in cm_plot_labels])
 	print(df_cm)
 	plt.figure(figsize=(10, 10))
-	plt.title('Confusion Matrix of FASHION-MNIST Dataset', fontsize=20)
+	sn.heatmap(df_cm, annot=True,  cmap='Blues', fmt='d',linewidths=3, linecolor='black')
 	plt.xlabel("True Class")  # x-axis label with fontsize 15
 	plt.ylabel("Predicted Class")  # y-axis label with fontsize 15
-	sn.heatmap(df_cm, annot=True,  cmap='Blues', fmt='d',linewidths=3, linecolor='black')
+	plt.title('Confusion Matrix of FASHION-MNIST Dataset', fontsize=20)
+	plt.show()
 
 
 predict_label(len(network))
-plt.show()
+
 
