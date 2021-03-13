@@ -57,7 +57,7 @@ gradient[i]['bias']: Denotes the `bias` at layer `i`.</br>
 gradient[i]['h']: Denotes the gradient with respect to the post activation output `h`<sub>i</sub> at layer `i`.</br>
 gradient[i]['a']: Denotes the gradient with respect to the pre activation output `a`<sub>i</sub> at layer `i`.</br>
 The descent algorithm would typically implement the update to be done on the weight matrix and bias at a layer i.</br>
-Now the newly implemented optimzation algorithm's instance can be passed to assiged to opt when making call to master. This has been described above. 
+Now the newly implemented optimzation algorithm's instance can be passed to assiged to opt when making call to master. This has been described [above](https://github.com/utsavdey/cs6910_assignment1/blob/master/README.md#how-to-use). 
 ## Forward Propagation Procedure ##
 *Desciption*: Performs forward propagation on the data point.</br>
 ```forward_propagation(n, x)```</br>
