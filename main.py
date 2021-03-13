@@ -264,6 +264,6 @@ def train():
         loss=run.config.loss
     except KeyError:
         loss='cross_entropy'
-    master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10, learning_rate=.0005,
+    master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
            opt=opti, weight_init=run.config.weight_init, activation=run.config.activation, layer_1=run.config.layer_1,
            layer_3=run.config.layer_3, layer_2=run.config.layer_2, loss=loss)
