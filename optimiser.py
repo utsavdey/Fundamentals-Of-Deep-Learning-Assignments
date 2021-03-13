@@ -11,8 +11,6 @@ class SimpleGradientDescent:
     def __init__(self, eta, layers, weight_decay=0.0):
         # learning rate
         self.eta = eta
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # number of layers
         self.layers = layers
         # number of calls
@@ -39,8 +37,6 @@ class MomentumGradientDescent:
         # learning rate
         self.eta = eta
         self.gamma = gamma
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # number of layers
         self.layers = layers
         # number of calls
@@ -89,8 +85,6 @@ class NAG:
         # learning rate
         self.eta = eta
         self.gamma = gamma
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # number of layers
         self.layers = layers
         # number of calls
@@ -156,8 +150,6 @@ class RMSProp:
         self.eta = eta
         # decay parameter for denominator
         self.beta = beta
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # number of layers
         self.layers = layers
         # number of calls
@@ -221,8 +213,6 @@ class ADAM:
         self.t_second_momentum = None
         # epsilon
         self.eps = eps
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # weight decay
         self.weight_decay = weight_decay
 
@@ -309,8 +299,6 @@ class NADAM:
         self.second_momentum = None
         # epsilon
         self.eps = eps
-        # historical loss, will be required for rate annealing
-        self.hist_loss = sys.float_info.max
         # weight decay
         self.weight_decay = weight_decay
 
@@ -379,4 +367,3 @@ class NADAM:
             network[i]['bias'] -= self.eta * np.multiply(temp_inv, v_t_hat[i]['bias'])
 
         self.calls += 1
-        # function for learning rate annealing
