@@ -111,7 +111,7 @@ def augment_my_data(datapoints, labels, d, newSize):
 
 
 # 1 epoch = 1 pass over the data
-def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type, augment):
+def fit(datapoints, batch, epochs, labels, opt, loss_type, augment):
     n = len(network)  # number of layers
     d = len(datapoints)  # number of data points
     """This variable will be used to separate , training and validation set
@@ -218,7 +218,7 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
    in every layer and then start the training process"""
 
 
-def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, layer_2, layer_3, weight_init='xavier',
+def master(batch, epochs, output_dim, activation, opt, layer_1, layer_2, layer_3, weight_init='xavier',loss_type='cross_entropy',
            augment=None):
     """initializing number of input features per datapoint as 784,
        since dataset consists of 28x28 pixel grayscale images
@@ -240,8 +240,8 @@ def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, l
     """Copying the structure of network."""
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
-    fit(datapoints=trainX, labels=trainY, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate, loss_type='cross_entropy',augment=augment)
+    fit(datapoints=trainX, labels=trainY, batch=batch, epochs=epochs, opt=opt,
+        loss_type=loss_type,augment=augment)
     return network
 
 
@@ -250,7 +250,7 @@ def train():
     opti = None
     wandb.run.name = 'augmented_bs_' + str(run.config.batch_size) + '_act_' + run.config.activation + '_opt_' + str(
         run.config.optimiser) + '_ini_' + str(run.config.weight_init) + '_epoch' + str(run.config.epoch) + '_lr_' + str(
-        round(run.config.learning_rate, 4))
+        round(run.config.learning_rate, 4) + str(run.config.loss))
     if run.config.optimiser == 'nag':
         opti = NAG(layers=4, eta=run.config.learning_rate, gamma=.90, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'rmsprop':
@@ -265,6 +265,6 @@ def train():
     elif run.config.optimiser == 'nadam':
         opti = NADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
 
-    master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10, learning_rate=.0005,
+    master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10,
            opt=opti, weight_init=run.config.weight_init, activation=run.config.activation, layer_1=run.config.layer_1,
-           layer_3=run.config.layer_3, layer_2=run.config.layer_2, augment=100)
+           layer_3=run.config.layer_3, layer_2=run.config.layer_2, loss_type=run.config.loss, augment=100)
