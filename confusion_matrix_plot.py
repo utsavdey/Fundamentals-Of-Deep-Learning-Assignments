@@ -103,14 +103,6 @@ def predict_label(number_of_layer):
 	plt.ylabel("Predicted Class")  # y-axis label
 	plt.title('Confusion Matrix of FASHION-MNIST Dataset', fontsize=20)
 	plt.show()
-	plt.savefig("Confusion_Matrix.png")
-	path_to_img = os.getcwd()
-	path_to_img = path_to_img + "\Confusion_Matrix.png"
-	im = plt.imread(path_to_img)
-	# Initialize run
-	wandb.init(project="Fashion-MNIST-Images")
-	# Log image
-	wandb.log({"img": [wandb.Image(im)]})
 
 
 predict_label(len(network))
