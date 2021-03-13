@@ -10,7 +10,7 @@ In this project we implement a feed forward neural network and use gradient desc
 # Installations: #
 1. We have used pip as the package manager. All the libraries we used above can be installed using the command: `pip install -r requirements.txt`
 2. Steps to Add Virtual Environment in IDE like Pycharm: https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html#python_create_virtual_env
-# How to USE? #
+# [How to USE?] #
 The entire project has been modularised using functions and classes to make it as scalable as possible for future developments and extensions.
 To train a model the project makes a call to `master()` in `main.py` file. </br>
 The parameters in master are the following <br />
@@ -50,6 +50,14 @@ where ```layer_1 = 32, activation = 'tanh', weight_init='xavier'```
 </br> Hence in order to change the configuration of the neural network we only need to chenge the arguments passed to two functions:
 1. master()
 2. add_layer() inside master()
+# How to add a new optimisation algorithm to the existing code? #
+The current code structure is fexible enough to accodomodate new optimisation algorithms. To add a new optimsation algorithm such as Eve one has to add a new class in the python file `optimiser.py`. The new class should primarily contain the `__init__()` for initializing various hyperparameter values such as the learning rate(eta), learning rate controller (lrc) if needed in order to perform learning rate annealing, weight decay to obtain regularised loss function and the `descent()` which wouldaccept three parameters `self,network,gradient` where self is an object of type optimsation algorithm used, network is a list which contains the entire neural network and gradient is a list which contains the current gradient with respect to the parameters in the output layer (y<sup>hat</sup> and a<sub>i</sub>), previous hidden layers (h<sub>i</sub> and a<sub>i</sub>), weight and biases.</br></br>
+gradient[i]['weight']: Denotes the weight matrix `W` at layer `i`.</br>
+gradient[i]['bias']: Denotes the `bias` at layer `i`.</br>
+gradient[i]['h']: Denotes the gradient with respect to the post activation output `h`<sub>i</sub> at layer `i`.</br>
+gradient[i]['a']: Denotes the gradient with respect to the pre activation output `a`<sub>i</sub> at layer `i`.</br>
+The descent algorithm would typically implement the update to be done on the weight matrix and bias at a layer i.</br>
+Now the newly implemented optimzation algorithm's instance can be passed to assiged to opt when making call to master. This has been described above. 
 ## Forward Propagation Procedure ##
 *Desciption*: Performs forward propagation on the data point.</br>
 ```forward_propagation(n, x)```</br>
