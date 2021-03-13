@@ -242,6 +242,7 @@ def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, l
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainY, batch=batch, epochs=epochs, f=n_features, opt=opt,
         learning_rate=learning_rate, loss_type='cross_entropy',augment=augment)
+    return network
 
 
 def train():

@@ -6,10 +6,12 @@ import math
 import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
+import wandb
+import os
 
 # load the trained network
 filename_model = 'neural_network.object'
-network = loaded_model = pickle.load(open(filename_model, 'rb'))
+network = pickle.load(open(filename_model, 'rb'))
 
 
 (trainX, trainy), (testX, testy) = fashion_mnist.load_data()
@@ -95,11 +97,20 @@ def predict_label(number_of_layer):
 						 columns=[i for i in cm_plot_labels])
 	print(df_cm)
 	plt.figure(figsize=(10, 10))
-	sn.heatmap(df_cm, annot=True,  cmap='Blues', fmt='d',linewidths=3, linecolor='black')
-	plt.xlabel("True Class")  # x-axis label with fontsize 15
-	plt.ylabel("Predicted Class")  # y-axis label with fontsize 15
+	ax = sn.heatmap(df_cm, annot=True,  cmap='Blues', fmt='d',linewidths=3, linecolor='black')
+	ax.set_yticklabels(cm_plot_labels,rotation=0)
+	plt.xlabel("True Class")  # x-axis label
+	plt.ylabel("Predicted Class")  # y-axis label
 	plt.title('Confusion Matrix of FASHION-MNIST Dataset', fontsize=20)
 	plt.show()
+	plt.savefig("Confusion_Matrix.png")
+	path_to_img = os.getcwd()
+	path_to_img = path_to_img + "\Confusion_Matrix.png"
+	im = plt.imread(path_to_img)
+	# Initialize run
+	wandb.init(project="Fashion-MNIST-Images")
+	# Log image
+	wandb.log({"img": [wandb.Image(im)]})
 
 
 predict_label(len(network))
