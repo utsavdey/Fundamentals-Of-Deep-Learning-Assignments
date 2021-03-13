@@ -10,7 +10,7 @@ In this project we implement a feed forward neural network and use gradient desc
 # Installations: #
 1. We have used pip as the package manager. All the libraries we used above can be installed using the command: `pip install -r requirements.txt`
 2. Steps to Add Virtual Environment in IDE like Pycharm: https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html#python_create_virtual_env
-# [How to USE?] #
+# How to USE? #
 The entire project has been modularised using functions and classes to make it as scalable as possible for future developments and extensions.
 To train a model the project makes a call to `master()` in `main.py` file. </br>
 The parameters in master are the following <br />
