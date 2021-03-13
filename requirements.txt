@@ -6,5 +6,4 @@ pickle-mixin
 matplotlib
 seaborn
 pandas
-os-sys
 plotly
