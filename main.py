@@ -21,8 +21,6 @@ network = []
 gradient = []
 # store gradient w.r.t a single datapoint
 transient_gradient = []
-# will contain the total amount of loss for each timestep(1). One timestep is defined as one update of the parameters.
-loss = 0
 
 
 def forward_propagation(n, x):
@@ -130,7 +128,8 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type, aug
     d = border
     # augmenting my datapoints
     if augment is not None:
-        (datapoints, labels, d) = augment_my_data(datapoints=datapoints, labels=labels, d=d, newSize=d + augment * batch)
+        (datapoints, labels, d) = augment_my_data(datapoints=datapoints, labels=labels, d=d,
+                                                  newSize=d + augment * batch)
 
     # is used to stochastically select our data.
     shuffler = np.arange(0, d)
@@ -143,9 +142,6 @@ def fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type, aug
         np.random.shuffle(shuffler)
         for i in range(0, d - batch + 1, batch):
             clean = True
-            # initiating loss for current epoch
-            global loss
-            loss = 0
             if isinstance(opt, NAG):
                 opt.lookahead(network=network)
             # iterate over a batch
@@ -219,9 +215,10 @@ def add_layer(number_of_neurons, context, weight_init, input_dim=None):
 
 
 def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, layer_2, layer_3, weight_init='xavier',
-           augment=None):
+           augment=None, loss='cross_entropy'):
     """initializing number of input features per datapoint as 784,
        since dataset consists of 28x28 pixel grayscale images
+       :param loss:
        :param augment: """
     n_features = 784
     global network
@@ -241,7 +238,7 @@ def master(batch, epochs, output_dim, learning_rate, activation, opt, layer_1, l
     gradient = copy.deepcopy(network)
     transient_gradient = copy.deepcopy(network)
     fit(datapoints=trainX, labels=trainY, batch=batch, epochs=epochs, f=n_features, opt=opt,
-        learning_rate=learning_rate, loss_type='cross_entropy',augment=augment)
+        learning_rate=learning_rate, loss_type=loss, augment=augment)
 
 
 def train():
@@ -263,7 +260,10 @@ def train():
         opti = ADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
     elif run.config.optimiser == 'nadam':
         opti = NADAM(layers=4, eta=run.config.learning_rate, weight_decay=run.config.weight_decay)
-
+    try:
+        loss=run.config.loss
+    except KeyError:
+        loss='cross_entropy'
     master(epochs=run.config.epoch, batch=run.config.batch_size, output_dim=10, learning_rate=.0005,
            opt=opti, weight_init=run.config.weight_init, activation=run.config.activation, layer_1=run.config.layer_1,
-           layer_3=run.config.layer_3, layer_2=run.config.layer_2, augment=100)
+           layer_3=run.config.layer_3, layer_2=run.config.layer_2, loss=loss)
