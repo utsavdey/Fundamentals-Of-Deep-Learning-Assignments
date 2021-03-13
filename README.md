@@ -75,7 +75,7 @@ Parameters : </br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**clean** : A boolean flag used to indicate whether it is the first datapoint from the batch by setting it to True or not. If not specified, then default value is set to False.</br>
 # Construction of Neural Network #
 The fit() defined in main.py and called by master() is responsible for training the neural network. It internally makes a call for forward propagation, backward propagation for a datapoint and computes validatation and testing accuracy and loss after every epoch and logs the result to wandb.</br>
-```fit(datapoints, batch, epochs, labels, opt, f, learning_rate, loss_type, augment)```</br></br>
+```fit(datapoints, batch, epochs, labels, opt, loss_type, augment)```</br></br>
 *Description*:
 1. Separates training and validation set.
 2. Performs dataset augmentation. 
