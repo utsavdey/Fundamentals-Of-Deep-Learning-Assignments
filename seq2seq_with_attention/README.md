@@ -18,7 +18,7 @@ In this project we implement attention networks to overcome the limitations of v
 # **NOTE:** 
 The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
 
-Uncomment wandb.agent() to use wandb and comment the call to train(). 
+**Uncomment** *wandb.agent()* to use wandb and comment the call to train(). 
 
 # Program Flow #
 
@@ -50,7 +50,7 @@ The parameters in validate() are the following:</br>
 **folder_name**: Accepts parameters of type string. This parameter is helpful in creating subfolder inside the prediction_attention folder as per the hyperparamter configurations.
 
 `visualize()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
-#### Parameters:
+</br>#### Parameters:
 **input_word**: Accepts string as input. Here we pass the transliterated roman word
 
 **output_word**: Accepts string as input. Here we pass the predicted output word
@@ -61,7 +61,7 @@ The parameters in validate() are the following:</br>
 ![Output_without_heatmap](https://user-images.githubusercontent.com/37553488/119277211-e53cee00-bc3b-11eb-9309-1fcf59ae18d0.png)
 
 `connectivity()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
-#### Parameters:
+</br>#### Parameters:
 **input_words**: Accepts string as input. Here we pass the transliterated roman word
 
 **rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.
@@ -69,8 +69,7 @@ The parameters in validate() are the following:</br>
 **file_path**: Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. The visualisation is stored with the file name: `connectivity.html` 
 
 `create_file()` is used to create and store the connectivity.html file in the specified  location.
-
-#### Parameters:
+</br>#### Parameters:
 **text_colors**: List of list where each sublist denotes the color to be given to every input character on mouse hover action on an output character.
 
 **input_words**: Accepts string as input. Here we pass the transliterated roman word.
@@ -80,8 +79,8 @@ The parameters in validate() are the following:</br>
 `get_shade_color(value)`: Returns a specific colour depending the value passed to it. Here the parameter `value` accepts an integer. 
 
 `transliterate()`: Finds the predicted target word for a given tansliterated roman word, plots the attention heatmap and visualises the LSTM activations if the visual_flag is set to True.
-#### Parameters:
-input_word:Accepts string as input. Here we pass the transliterated roman word</br>
+</br>#### Parameters:
+**input_word**:Accepts string as input. Here we pass the transliterated roman word</br>
 **rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.</br>
 **file_path**: Accepts a string as input. Here we pass the file location where we want to store the attention heatmap for the input word and the predicted target word. If not specified the attention heatmaps is stored in the current working directory by the name "attention_heatmap.png"</br>
 **visual_flag**: Accepts a boolean True or boolean False. If the visual_flag is set to true then the code to statically visualise the LSTM activations are called. Default value of the flag is set to "True".
@@ -109,7 +108,7 @@ The details of the best model configurations is given below:
 5. Batch size = 64
 6. Embedded dimension = 512
 7. Epochs = 20
-The accuracy obtained on the test set is 40.26% and on validation set is 41.93%.
+</br>The accuracy obtained on the test set is 40.26% and on validation set is 41.93%. To be noted here is that the predicted output is considered correct only if it exactly matches the reference output(actual target output).
 # Acknowledgements #
 1. The entire project has been developed from the lecture slides of Dr. Mitesh Khapra, Indian Institute of Technology Madras: http://cse.iitm.ac.in/~miteshk/CS6910.html#schedule
 2. https://wandb.ai
