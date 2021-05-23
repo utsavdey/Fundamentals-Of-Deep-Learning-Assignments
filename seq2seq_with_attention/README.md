@@ -4,17 +4,16 @@ In this project we implement attention networks to overcome the limitations of v
 
 # Libraries Used: #
 ----------------------------------------------------
-1. uniseg
-2. wandb
-3. matplotlib libraries were used for plotting the confusion matrix.
-4. Keras and tensorflow 
-5. numpy to convert the attention weights and loss values from tensor objects into numpy objects.
-6. os for file operations
-7. io for file operations
-8. time to measure the time taken for every epoch.
-9. random to select 10 random test inputs for attention heatmap generation
-10. shutil to force delete a folder
-11. Ipython for visualisation
+1. wandb to obtian the best model using the hyperparameter configurations.
+2. matplotlib libraries were used for plotting the confusion matrix.
+3. Keras and tensorflow 
+4. numpy to convert the attention weights and loss values from tensor objects into numpy objects.
+5. os for file operations
+6. io for file operations
+7. time to measure the time taken for every epoch.
+8. random to select 10 random test inputs for attention heatmap generation
+9. shutil to force delete a folder
+10. Ipython for visualisation
 
 # **NOTE:** 
 The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the GitHub project repository. *Kindly upload the same before generating the heatmaps.* 
