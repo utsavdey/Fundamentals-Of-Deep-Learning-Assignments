@@ -1,6 +1,6 @@
 # Assignment 3: Use recurrent neural networks to build a transliteration system.
 ----------------------------------------------------
-In this project we implement a model sequence to sequence learning problems using Recurrent Neural Networks, compare different cells such as vanilla RNN, LSTM and GRU, implement attention networks to overcome the limitations of vanilla seq2seq model and visualise the interactions between different components in an RNN based model. We use wandb for hyper parameter configuration using the validation dataset and visualisation of test data. We have performed a large number of experiments to make meaningful inferences and get to our best model.
+In this [project](https://wandb.ai/miteshk/assignments/reports/Assignment-3--Vmlldzo0NjQwMDc) we implement a model sequence to sequence learning problems using Recurrent Neural Networks, compare different cells such as vanilla RNN, LSTM and GRU, implement attention networks to overcome the limitations of vanilla seq2seq model and visualise the interactions between different components in an RNN based model. We use wandb for hyper parameter configuration using the validation dataset and visualisation of test data. We have performed a large number of experiments to make meaningful inferences and get to our best model.
 
 # Set up and Installation: #
 ----------------------------------------------------
