@@ -19,6 +19,31 @@ In this project we implement attention networks to overcome the limitations of v
 The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
 
 # Program Flow #
+The inference_model() is similar to the train_every_step(). Here the only difference is that we don't use [teacher forcing](https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/). 
+
+*   The decoder input at every time step is the prediction that it had made previously along with the hidden state and the encoder output. 
+*   We stop predicting the target word when the model predicts the end token '\n'.
+*   The attention weights obtained at every time step is stored and returned so that it can be used for heatmap generation, visualisation and connectivity exploration.
+
+It takes a transliterated romanized word as input and produces the corresponding indic language word here 'Hindi'.
+
+`validate(path_to_file,folder_name)`: Finds the accuracy of the model on the test and validation dataset. 
+
+It creates a folder ***prediction_attention*** with a sub-folder folder_name where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
+
+The parameters in validate() are the following:</br>
+**path_to_file**: Accepts parameters of type string. Contains the path to validation or test dataset. from  from the folder dakshina_dataset_v1.0/hi/lexicons/</br>
+**folder_name**: Accepts parameters of type string. This parameter is helpful in creating subfolder inside the prediction_attention folder as per the hyperparamter configurations.
+
+`visualize()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
+#### Parameters:
+**input_word**: Accepts string as input. Here we pass the transliterated roman word
+
+**output_word**: Accepts string as input. Here we pass the predicted output word
+
+**att_w**: Takes a list of list where each sublist denotes the attention weights learnt at a particular timestep. Each of the sublist of size equal to length of the transliterated roman word which is fed as input.
+
+**Example:**
 
 ## How to debug the code? ##
 
