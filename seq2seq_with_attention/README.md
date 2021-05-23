@@ -21,6 +21,18 @@ The hindi font file for displaying hindi characters in the matplotlib plots [her
 Uncomment wandb.agent() to use wandb and comment the call to train(). 
 
 # Program Flow #
+
+Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. Currently, the hyperparameters have been set to the best configurations we obtained during pur experiments.
+
+We use a single layered encoder and a single layered decoder and add an attention network to this basic sequence to sequence model and train the model. 
+
+Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
+
+We randomly choose 10 inputs from our test data and generate a 3*3 attention heatmaps on the same.
+
+We then perform a [connectivity visualisation](https://distill.pub/2019/memorization-in-rnns/#appendix-autocomplete) for the predictions made by our model. Currently, the connectivity visualisation can be performed on any three romanised words. For example: here we have chosen `doctor`, `prayogshala` and `angarakshak` for the purpose of visualisation.
+
+
 The inference_model() is similar to the train_every_step(). Here the only difference is that we don't use [teacher forcing](https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/). 
 
 *   The decoder input at every time step is the prediction that it had made previously along with the hidden state and the encoder output. 
@@ -92,3 +104,11 @@ Also, to reduce the validation datasize reduce the number of inputs in validate(
 2. https://wandb.ai
 3. https://github.com/
 4. https://stackoverflow.com/questions/44526794/matplotlib-pyplot-labels-not-displaying-hindi-text-in-labels
+5. CHARACTER-LEVEL LANGUAGE MODELING: https://arxiv.org/pdf/1506.02078.pdf
+6. Write your own custom attention layer: https://towardsdatascience.com/create-your-own-custom-attention-layer-understand-all-flavours-2201b5e8be9e
+7. https://keras.io/api/layers/recurrent_layers/lstm/
+8. Dzmitry Bahdanau and Kyunghyun Cho and Yoshua Bengio, Neural Machine Translation by Jointly Learning to Align and Translate: https://arxiv.org/pdf/1409.0473.pdf
+9. Teacher forcing: https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/
+10. [Intution behind attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)
+11. [Intuition & Use-Cases of Embeddings in NLP & beyond](https://www.youtube.com/watch?v=4-QoMdSqG_I)
+12. Additonal resources on attention. [1](https://stackoverflow.com/questions/62948332/how-to-add-attention-layer-to-a-bi-lstm/62949137#62949137), [2](https://androidkt.com/text-classification-using-attention-mechanism-in-keras/), [3](https://stackoverflow.com/questions/56946995/how-to-build-a-attention-model-with-keras), [4](https://datascience.stackexchange.com/questions/76444/how-can-i-build-a-self-attention-model-with-tf-keras-layers-attention), [5](https://github.com/spro/practical-pytorch/blob/master/seq2seq-translation/seq2seq-translation.ipynb)
