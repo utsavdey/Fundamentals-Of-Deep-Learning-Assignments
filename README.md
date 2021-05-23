@@ -4,5 +4,5 @@ In this project we implement a model sequence to sequence learning problems usin
 
 # Set up and Installation: #
 ----------------------------------------------------
-Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google Colab.
+Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google Colab.</br>
 `git clone https://github.com/utsavdey/cs6910_assignment3.git`
