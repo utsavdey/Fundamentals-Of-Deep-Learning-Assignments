@@ -118,12 +118,15 @@ The details of the best model configurations is given below:
 1. The entire project has been developed from the lecture slides of Dr. Mitesh Khapra, Indian Institute of Technology Madras: http://cse.iitm.ac.in/~miteshk/CS6910.html#schedule
 2. https://wandb.ai
 3. https://github.com/
-4. https://stackoverflow.com/questions/44526794/matplotlib-pyplot-labels-not-displaying-hindi-text-in-labels
-5. CHARACTER-LEVEL LANGUAGE MODELING: https://arxiv.org/pdf/1506.02078.pdf
-6. Write your own custom attention layer: https://towardsdatascience.com/create-your-own-custom-attention-layer-understand-all-flavours-2201b5e8be9e
-7. https://keras.io/api/layers/recurrent_layers/lstm/
-8. Dzmitry Bahdanau and Kyunghyun Cho and Yoshua Bengio, Neural Machine Translation by Jointly Learning to Align and Translate: https://arxiv.org/pdf/1409.0473.pdf
-9. Teacher forcing: https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/
-10. [Intution behind attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)
-11. [Intuition & Use-Cases of Embeddings in NLP & beyond](https://www.youtube.com/watch?v=4-QoMdSqG_I)
-12. Additonal resources on attention. [1](https://stackoverflow.com/questions/62948332/how-to-add-attention-layer-to-a-bi-lstm/62949137#62949137), [2](https://androidkt.com/text-classification-using-attention-mechanism-in-keras/), [3](https://stackoverflow.com/questions/56946995/how-to-build-a-attention-model-with-keras), [4](https://datascience.stackexchange.com/questions/76444/how-can-i-build-a-self-attention-model-with-tf-keras-layers-attention), [5](https://github.com/spro/practical-pytorch/blob/master/seq2seq-translation/seq2seq-translation.ipynb)
+4. [Dakshina dataset](https://github.com/google-research-datasets/dakshina)
+5. https://stackoverflow.com/questions/44526794/matplotlib-pyplot-labels-not-displaying-hindi-text-in-labels
+6. CHARACTER-LEVEL LANGUAGE MODELING: https://arxiv.org/pdf/1506.02078.pdf
+7. Write your own custom attention layer: https://towardsdatascience.com/create-your-own-custom-attention-layer-understand-all-flavours-2201b5e8be9e
+8. https://keras.io/api/layers/recurrent_layers/lstm/
+9. Dzmitry Bahdanau and Kyunghyun Cho and Yoshua Bengio, Neural Machine Translation by Jointly Learning to Align and Translate: https://arxiv.org/pdf/1409.0473.pdf
+10. Teacher forcing: https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/
+11. [Intution behind attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)
+12. [Intuition & Use-Cases of Embeddings in NLP & beyond](https://www.youtube.com/watch?v=4-QoMdSqG_I)
+13. Additonal resources on attention. [1](https://stackoverflow.com/questions/62948332/how-to-add-attention-layer-to-a-bi-lstm/62949137#62949137), [2](https://androidkt.com/text-classification-using-attention-mechanism-in-keras/), [3](https://stackoverflow.com/questions/56946995/how-to-build-a-attention-model-with-keras), [4](https://datascience.stackexchange.com/questions/76444/how-can-i-build-a-self-attention-model-with-tf-keras-layers-attention), [5](https://github.com/spro/practical-pytorch/blob/master/seq2seq-translation/seq2seq-translation.ipynb)
+14. [Connectivity visualisation](https://distill.pub/2019/memorization-in-rnns/#appendix-autocomplete)
+15. [Statistically visualise LSTM Activations in Keras](https://towardsdatascience.com/visualising-lstm-activations-in-keras-b50206da96ff).
