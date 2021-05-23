@@ -6,3 +6,6 @@ In this project we implement a model sequence to sequence learning problems usin
 ----------------------------------------------------
 Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google Colab.</br>
 `git clone https://github.com/utsavdey/cs6910_assignment3.git`
+
+Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/vanilla_seq2seq) to know more about vanilla_seq2seq without attention.</br>
+Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/seq2seq_with_attention) to know more about seq2seq with attention network.
