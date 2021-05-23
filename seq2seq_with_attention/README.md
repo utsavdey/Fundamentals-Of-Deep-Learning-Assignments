@@ -16,7 +16,7 @@ In this project we implement attention networks to overcome the limitations of v
 10. Ipython for visualisation
 
 # **NOTE:** 
-The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the GitHub project repository. *Kindly upload the same before generating the heatmaps.* 
+The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
 
 # Program Flow #
 
