@@ -51,6 +51,7 @@ The parameters in validate() are the following:</br>
 
 `visualize()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
 </br>#### Parameters:
+
 **input_word**: Accepts string as input. Here we pass the transliterated roman word
 
 **output_word**: Accepts string as input. Here we pass the predicted output word
@@ -62,6 +63,7 @@ The parameters in validate() are the following:</br>
 
 `connectivity()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
 </br>#### Parameters:
+
 **input_words**: Accepts string as input. Here we pass the transliterated roman word
 
 **rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.
@@ -70,6 +72,7 @@ The parameters in validate() are the following:</br>
 
 `create_file()` is used to create and store the connectivity.html file in the specified  location.
 </br>#### Parameters:
+
 **text_colors**: List of list where each sublist denotes the color to be given to every input character on mouse hover action on an output character.
 
 **input_words**: Accepts string as input. Here we pass the transliterated roman word.
@@ -80,6 +83,7 @@ The parameters in validate() are the following:</br>
 
 `transliterate()`: Finds the predicted target word for a given tansliterated roman word, plots the attention heatmap and visualises the LSTM activations if the visual_flag is set to True.
 </br>#### Parameters:
+
 **input_word**:Accepts string as input. Here we pass the transliterated roman word</br>
 **rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.</br>
 **file_path**: Accepts a string as input. Here we pass the file location where we want to store the attention heatmap for the input word and the predicted target word. If not specified the attention heatmaps is stored in the current working directory by the name "attention_heatmap.png"</br>
@@ -87,6 +91,7 @@ The parameters in validate() are the following:</br>
 
 `generate_inputs()`: Randomly chooses 10 inputs from the test dataset and calles the transliteration() to produce the predicted target input and heatmaps. It also set the visual_flag in transliteration() to True only for the first test input and False for the rest 9 test inputs.
 ####Parameters:
+
 **rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.</br>
 **n_test_samples**: Accepts an integer as input. Here we pass number of test inputs to be used for the heatmap generation. Default value is set to 10.
 
