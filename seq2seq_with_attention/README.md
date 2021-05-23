@@ -4,7 +4,7 @@ In this project we implement attention networks to overcome the limitations of v
 
 # Libraries Used: #
 ----------------------------------------------------
-1. wandb to obtian the best model using the hyperparameter configurations.
+1. wandb to obtain the best model using the hyperparameter configurations.
 2. matplotlib libraries were used for plotting the confusion matrix.
 3. Keras and tensorflow 
 4. numpy to convert the attention weights and loss values from tensor objects into numpy objects.
@@ -30,3 +30,4 @@ Also, to reduce the validation datasize reduce the number of inputs in validate(
 1. The entire project has been developed from the lecture slides of Dr. Mitesh Khapra, Indian Institute of Technology Madras: http://cse.iitm.ac.in/~miteshk/CS6910.html#schedule
 2. https://wandb.ai
 3. https://github.com/
+4. https://stackoverflow.com/questions/44526794/matplotlib-pyplot-labels-not-displaying-hindi-text-in-labels
