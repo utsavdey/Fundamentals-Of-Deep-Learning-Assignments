@@ -1,6 +1,6 @@
 # Vanilla Seq-to-Seq
 ----------------------------------------------------
- For Vanilla Seq-to-Seq have implemented the Encoder-Decoder model without the attention. We have built stacked encoder-decoder model her
+ For Vanilla Seq-to-Seq have implemented the Encoder-Decoder model without the attention. We have built stacked encoder-decoder model here.
 # Set up and Installation: #
 ----------------------------------------------------
 Easiest way to try this code out is :-
@@ -11,6 +11,8 @@ Easiest way to try this code out is :-
 # Best Model #
 ----------------------------------------------------
 ![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
+
+Accuracy on test dataset= 34.00%
 
 # Methods #
 |   | Method name     | Description                                                                                                          |
