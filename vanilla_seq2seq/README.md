@@ -15,3 +15,6 @@ Easiest way to try this code out is
 
 # Methods #
 ----------------------------------------------------
+|   | Method name | Description                                                     |
+|---|-------------|-----------------------------------------------------------------|
+| 1 | data        | Prepare the data by padding the output and then tokenizing it . |
