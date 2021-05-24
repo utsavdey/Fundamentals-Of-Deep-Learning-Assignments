@@ -4,5 +4,7 @@ In this sub part of Assignment 3 we have implemented the Encoder-Decoder model w
 
 # Set up and Installation: #
 ----------------------------------------------------
-Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google Colab.
-`git clone https://github.com/utsavdey/cs6910_assignment3.git`
+Easiest way to try this code out is
+- Download the .pynb file
+- Upload it to colab
+- Run All cells
