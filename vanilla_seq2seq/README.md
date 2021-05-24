@@ -26,7 +26,7 @@ Accuracy on test dataset= 34.00%
 | 7 | train           | Train using configs sent by wandb.                                                                                   |
 | 8 | manual_train    | Train using our custom configs.                                                                                      |
 
-#Sequence of method calling#
+# Sequence of method calling #
 -------------------------------------------------------
 |   | Method name     | Sequence of Call |
 |---|-----------------|------------------|
