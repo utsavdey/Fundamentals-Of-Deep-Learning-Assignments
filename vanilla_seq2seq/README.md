@@ -28,6 +28,8 @@ Accuracy on test dataset= 34.00%
 
 # Sequence of method calling #
 -------------------------------------------------------
+A typical sequence of method calling is shown below. Here we are sequence when we do manual training.
+
 |   | Method name     | Sequence of Call |
 |---|-----------------|------------------|
 | 1 | data            | 0                |
