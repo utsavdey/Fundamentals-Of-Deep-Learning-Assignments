@@ -1,6 +1,6 @@
 # Vanilla Seq-to-Seq
 ----------------------------------------------------
- For Vanilla Seq-to-Seq have implemented the Encoder-Decoder model without the attention. We have built stacked encoder-decoder model here.
+ Here we have implemented the Encoder-Decoder model without the attention. We have built stacked encoder-decoder model here.
 # Set up and Installation: #
 ----------------------------------------------------
 Easiest way to try this code out is :-
