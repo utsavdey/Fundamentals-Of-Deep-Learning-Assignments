@@ -43,8 +43,11 @@ To execute the program in Google Colab one can click on the run cell option.
  
 # Sequence to Sequence Model Construction #
 ## train() ##
-Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. Currently, the hyperparameters have been set to the best configurations we obtained during our experiments.
+| Parameters | Description                                                                                                                                                                |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| use_wandb  | Accepts a boolean True or boolean False. Deafult value set to True. Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. |
 
+Currently, the hyperparameters have been set to the best configurations we obtained during our experiments.
 
 Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
 
@@ -66,58 +69,63 @@ It takes a transliterated romanized word as input and produces the corresponding
 
 It creates a folder ***prediction_attention*** with a sub-folder folder_name where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
 
-The parameters in validate() are the following:</br>
-**path_to_file**: Accepts parameters of type string. Contains the path to validation or test dataset. from  from the folder dakshina_dataset_v1.0/hi/lexicons/</br>
-**folder_name**: Accepts parameters of type string. This parameter is helpful in creating subfolder inside the prediction_attention folder as per the hyperparamter configurations.
+| Parameters   | Description                                                                                                                                                        |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| path_to_file | Accepts parameters of type string. Contains the path to validation or test dataset. from from the folder dakshina_dataset_v1.0/hi/lexicons/                        |
+| folder_name  | Accepts parameters of type string. This parameter is helpful in creating subfolder inside the prediction_attention folder as per the hyperparamter configurations. |
 
-## cisualize() ##
+## visualize() ##
 `visualize()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
-</br> **Parameters:**
-
-**input_word**: Accepts string as input. Here we pass the transliterated roman word
-
-**output_word**: Accepts string as input. Here we pass the predicted output word
-
-**att_w**: Takes a list of list where each sublist denotes the attention weights learnt at a particular timestep. Each of the sublist of size equal to length of the transliterated roman word which is fed as input.
+| Parameters  | Description                                                                                                                                                                                                |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| input_word  | Accepts string as input. Here we pass the transliterated roman word                                                                                                                                        |
+| output_word | Accepts string as input. Here we pass the predicted output word.                                                                                                                                           |
+| att_w       | Takes a list of list where each sublist denotes the attention weights learnt at a particular timestep. Each of the sublist of size equal to length of the transliterated roman word which is fed as input. |
 
 **Example:**</br>
 ![Output_without_heatmap](https://user-images.githubusercontent.com/37553488/119277211-e53cee00-bc3b-11eb-9309-1fcf59ae18d0.png)
 
 `connectivity()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
-</br> **Parameters:**
 
-**input_words**: Accepts string as input. Here we pass the transliterated roman word
-
-**rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.
-
-**file_path**: Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. The visualisation is stored with the file name: `connectivity.html` 
+| Parameters | Description                                                                                                                                                       |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| input_word | Accepts string as input. Here we pass the transliterated roman word                                                                                               |
+| rnn_type   | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'.                                             |
+| file_path  | Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. The visualisation is stored with the file name: [connectivity.html](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/connectivity.html)   |
 
 `create_file()` is used to create and store the connectivity.html file in the specified  location.
-</br> **Parameters:**
 
-**text_colors**: List of list where each sublist denotes the color to be given to every input character on mouse hover action on an output character.
+| Parameters  | Description                                                                                                                                                       |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| input_word  | Accepts string as input. Here we pass the transliterated roman word                                                                                               |
+| text_colors | List of list where each sublist denotes the color to be given to every input character on mouse hover action on an output character.                              |
+| rnn_type    | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'.                                             |
+| file_path   | Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. The visualisation is stored with the file name: [connectivity.html](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/connectivity.html) |
 
-**input_words**: Accepts string as input. Here we pass the transliterated roman word.
+## get_shade_color() ##
+`get_shade_color()`: Returns a specific colour depending the value passed to it.  
 
-**file_path**: Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. If not specified the default file path is set to the current working directory. The visualisation is stored with the file name: [connectivity.html](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/connectivity.html) 
-
-`get_shade_color(value)`: Returns a specific colour depending the value passed to it. Here the parameter `value` accepts an integer. 
+| Parameters | Description                                                                                                                                                       |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| value      | Expected a floating number between 0-1 denoting the attention weight of the j<sup>th</sup> input character while predicting the i<sup>th</sup>output character.  |
 
 ## transliterate() ##
 `transliterate()`: Finds the predicted target word for a given tansliterated roman word, plots the attention heatmap and visualises the LSTM activations if the visual_flag is set to True.
-</br>**Parameters:**
+| Parameters  | Description                                                                                                                                                                                                                                                                     |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| input_word  | Accepts string as input. Here we pass the transliterated roman word                                                                                                                                                                                                             |
+| rnn_type    | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'.                                                                                                                                                           |
+| file_path   | Accepts a string as input. Here we pass the file location where we want to store the attention heatmap for the input word and the predicted target word. If not specified the attention heatmaps is stored in the current working directory by the name "attention_heatmap.png" |
+| visual_flag | Accepts a boolean True or boolean False. If the visual_flag is set to true then the code to statically visualise the LSTM activations are called. Default value of the flag is set to "True".                                                                                   |
 
-**input_word**:Accepts string as input. Here we pass the transliterated roman word</br>
-**rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.</br>
-**file_path**: Accepts a string as input. Here we pass the file location where we want to store the attention heatmap for the input word and the predicted target word. If not specified the attention heatmaps is stored in the current working directory by the name "attention_heatmap.png"</br>
-**visual_flag**: Accepts a boolean True or boolean False. If the visual_flag is set to true then the code to statically visualise the LSTM activations are called. Default value of the flag is set to "True".
 
-## generate_inputs ##
+## generate_inputs() ##
 `generate_inputs()`: Randomly chooses 10 inputs from the test dataset and calles the transliteration() to produce the predicted target input and heatmaps. It also set the visual_flag in transliteration() to True only for the first test input and False for the rest 9 test inputs.</br>
-**Parameters:**
+| Parameters     | Description                                                                                                                        |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------|
+| rnn_type       | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'.              |
+| n_test_samples | Accepts an integer as input. Here we pass number of test inputs to be used for the heatmap generation. Default value is set to 10. |
 
-**rnn_type**: Accepts string as input. Here we pass the type of RNN being used. THe acceptable values are 'RNN', 'LSTM', and 'GRU'.</br>
-**n_test_samples**: Accepts an integer as input. Here we pass number of test inputs to be used for the heatmap generation. Default value is set to 10.
 
 
 
