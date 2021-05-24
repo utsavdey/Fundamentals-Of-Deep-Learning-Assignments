@@ -2,6 +2,8 @@
 ----------------------------------------------------
 In this project we implement attention networks to overcome the limitations of vanilla seq2seq model and visualise the interactions between different components in an RNN based model. We use wandb for hyper parameter configuration using the validation dataset and visualisation of test data. We have performed a large number of experiments to make meaningful inferences and get to our best model.
 
+Here we use a single layered encoder and a single layered decoder and add an attention network to this basic sequence to sequence model and train the model. 
+
 # Libraries Used: #
 ----------------------------------------------------
 1. wandb to obtain the best model using the hyperparameter configurations.
@@ -18,13 +20,28 @@ In this project we implement attention networks to overcome the limitations of v
 # **NOTE:** 
 The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
 
-**Uncomment** *wandb.agent()* to use wandb and comment the call to train(). 
+To run the code using wandb simply **Uncomment** *wandb.agent()* and comment the call to train(). 
+
+To execute the program in Google Colab one can click on the run cell option.
 
 # Program Flow #
 
+* At first the program downloads the [dataset](https://storage.googleapis.com/gresearch/dakshina/dakshina_dataset_v1.0.tar) and sets the train, validation and test filepath(train_file_path, vaildation_file_path, test_file_path) to the standard train, dev, test set from the folder **dakshina_dataset_v1.0/hi/lexicons/**. 
+* Create Input word tensors, target word tensors, input vocabulary and output vocabulary from training set.
+   * Every target word and input word(translitereated roman word) is appended with a **Start of Sequence Character** ***'\t'*** and **End of Sequence Character** ***'\n'***.
+   * We create a dictionary of all the unique characters in the training dataset for both the input language(ENGLISH: inp_lang) and the target language(HINDI: targ_lang).
+   * The pairs [HINDI, ENGLISH] of target word and input word(translitereated roman word) are fed into target_tensor_train and input_tensor_train respectively.
+ * Begin training.
+   * Log the train loss and validation accuracy if wandb is being used.
+ * Report the test accuracy after the completion of the model training.
+ * Generate random number(=**n_test_samples**) of test inputs to evaluate the model performance.
+   * Generate the attention heatmap. This shows which segments of the input word(ENGLISH) takes the model's attention while predicting the target word(HINDI).
+   * Statically visualise the RNN Type ('RNN', 'LSTM', 'GRU') activations.
+   * Perform connectivity visualisation to understand which is the input(ENGLISH) character that the sequence to sequence model is looking at while decoding the i<sup>th</sup> character in the output(a HINDI character).
+ 
+
 Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. Currently, the hyperparameters have been set to the best configurations we obtained during pur experiments.
 
-We use a single layered encoder and a single layered decoder and add an attention network to this basic sequence to sequence model and train the model. 
 
 Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
 
