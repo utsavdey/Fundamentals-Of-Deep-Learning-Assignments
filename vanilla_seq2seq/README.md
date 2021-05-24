@@ -26,7 +26,18 @@ Accuracy on test dataset= 34.00%
 | 7 | train           | Train using configs sent by wandb.                                                                                   |
 | 8 | manual_train    | Train using our custom configs.                                                                                      |
 
-
+#Sequence of method calling#
+-------------------------------------------------------
+|   | Method name     | Sequence of Call |
+|---|-----------------|------------------|
+| 1 | data            | 0                |
+| 2 | build_model     | 2                |
+| 3 | build_inference | 3                |
+| 4 | decode_batch    | 4                |
+| 5 | test_accuracy   | 6                |
+| 6 | batch_validate  | 5                |
+| 7 | train           | -                |
+| 8 | manual_train    | 1                |
 # Acknoledgement #
 1. Course slides of CS6910 course by Prof. Mithesh Khapra
 2. [This](https://keras.io/examples/nlp/lstm_seq2seq/)  blog was very helpful in understanding how Seq-to-Seq models are coded in Keras. 
