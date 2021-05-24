@@ -18,7 +18,7 @@ Here we use a single layered encoder and a single layered decoder and add an att
 10. Ipython for visualisation
 
 # **NOTE:** 
-The hindi font file for displaying hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
+The Hindi font file for displaying Hindi characters in the matplotlib plots [here](https://drive.google.com/file/d/11B4BahRBIujMr_jhsw_uXbxN9LF5CHaX/view?usp=sharing). A copy of the same has been upload in the [GitHub project repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/Nirmala.ttf). *Kindly upload the same before generating the heatmaps.* 
 
 To run the code using wandb simply **Uncomment** *wandb.agent()* and comment the call to train(). 
 
@@ -60,6 +60,9 @@ We then perform a [connectivity visualisation](https://distill.pub/2019/memoriza
 Example:
 * To use wandb: wandb.agent("<sweep_id>",train) (sample sweep id: "utsavdey/attention-seq-to-seq/w8pglu2i")
 * To train without want wandb: train(use_wandb=False)
+
+![image](https://user-images.githubusercontent.com/37553488/119320997-ccfbbc00-bc99-11eb-9985-6f9c81af238b.png)
+
 
 ## inference_model() ##
 The inference_model() is similar to the train_every_step(). Here the only difference is that we don't use [teacher forcing](https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/). 
@@ -163,7 +166,7 @@ Also, to reduce the validation datasize reduce the number of inputs in validate(
 Run the train() for 1 epoch. To visualise the code for 20 epochs you can restore the model parameters as provided in the [github repository](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/training_checkpoints.zip) using `checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))` after runnning the train function for one epoch.
 
 ## Best Model Configurations ##
-Several experiments were performed to smartly and strategically analyse the hyperparameter configurations by logging the eprenmental results to wandb. To know a summary of the experiments performed visit [here](https://docs.google.com/spreadsheets/d/16FtG5UmiUgYG-q7mFtxHi9EzqxGpyij9UQmZE_5U9lc/edit?usp=sharing)</br>
+Several experiments were performed to smartly and strategically analyse the hyperparameter configurations by logging the eprenmental results to wandb. To know a summary of the experiments performed visit [here](https://docs.google.com/spreadsheets/d/16FtG5UmiUgYG-q7mFtxHi9EzqxGpyij9UQmZE_5U9lc/edit?usp=sharing).</br>
 The details of the best model configurations is given below:
 1. Cell Type = 'LSTM'
 2. Number of encoder/decoder layers = 1
