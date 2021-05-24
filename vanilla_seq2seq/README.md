@@ -37,11 +37,6 @@ A typical sequence of method calling is shown below. Here we are sequence when w
 | 7 | train           | -                |
 | 8 | manual_train    | 1                |
 
-
-# Best Model #
-----------------------------------------------------
-![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
-
 # Training without WandB #
 -----------------------------------------------------
 As shown below manual training takes in a object of 'configuration' class.
@@ -55,6 +50,12 @@ manual_train(config)
 - Argument 6 : Dropout
 - Argument 7 : Epochs
 - Argument 8 : Batch Size
+
+# Best Model #
+----------------------------------------------------
+![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
+
+
 
 # Acknoledgement #
 1. Course slides of CS6910 course by Prof. Mithesh Khapra
