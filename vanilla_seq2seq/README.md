@@ -1,7 +1,6 @@
 # Vanilla Seq-to-Seq
 ----------------------------------------------------
- For Vanilla Seq-to-Seq have implemented the Encoder-Decoder model without the attention. Multiple layers of encoder and multiple layer of decoder can be added in module.
-
+ For Vanilla Seq-to-Seq have implemented the Encoder-Decoder model without the attention. We have built stacked encoder-decoder model her
 # Set up and Installation: #
 ----------------------------------------------------
 Easiest way to try this code out is :-
