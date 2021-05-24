@@ -27,6 +27,6 @@ Accuracy on test dataset= 34.00%
 | 8 | manual_train    | Train using our custom configs.                                                                                      |
 
 
-# Ackonledgement #
+# Acknoledgement #
 1. Course slides of CS6910 course by Prof. Mithesh Khapra
 2. [This](https://keras.io/examples/nlp/lstm_seq2seq/)  blog was very helpful in understanding how Seq-to-Seq models are coded in Keras. 
