@@ -1,4 +1,4 @@
-# Assignment 3: Use recurrent neural networks to build a transliteration system.
+# Assignment 3: Use recurrent neural networks with attention mechanism to build a transliteration system.
 ----------------------------------------------------
 In this project we implement attention networks to overcome the limitations of vanilla seq2seq model and visualise the interactions between different components in an RNN based model. We use wandb for hyper parameter configuration using the validation dataset and visualisation of test data. We have performed a large number of experiments to make meaningful inferences and get to our best model.
 
@@ -59,7 +59,7 @@ We then perform a [connectivity visualisation](https://distill.pub/2019/memoriza
 
 Example:
 * To use wandb: wandb.agent("<sweep_id>",train) (sample sweep id: "utsavdey/attention-seq-to-seq/w8pglu2i")
-* To train without want wandb: train(use_wandb=False)
+* To train without wandb: train(use_wandb=False)
 
 ![image](https://user-images.githubusercontent.com/37553488/119320997-ccfbbc00-bc99-11eb-9985-6f9c81af238b.png)
 
@@ -191,4 +191,4 @@ The details of the best model configurations is given below:
 12. [Intuition & Use-Cases of Embeddings in NLP & beyond](https://www.youtube.com/watch?v=4-QoMdSqG_I)
 13. Additonal resources on attention. [1](https://stackoverflow.com/questions/62948332/how-to-add-attention-layer-to-a-bi-lstm/62949137#62949137), [2](https://androidkt.com/text-classification-using-attention-mechanism-in-keras/), [3](https://stackoverflow.com/questions/56946995/how-to-build-a-attention-model-with-keras), [4](https://datascience.stackexchange.com/questions/76444/how-can-i-build-a-self-attention-model-with-tf-keras-layers-attention), [5](https://github.com/spro/practical-pytorch/blob/master/seq2seq-translation/seq2seq-translation.ipynb)
 14. [Connectivity visualisation](https://distill.pub/2019/memorization-in-rnns/#appendix-autocomplete)
-15. [Statistically visualise LSTM Activations in Keras](https://towardsdatascience.com/visualising-lstm-activations-in-keras-b50206da96ff).
+15. [Statically visualise LSTM Activations in Keras](https://towardsdatascience.com/visualising-lstm-activations-in-keras-b50206da96ff).
