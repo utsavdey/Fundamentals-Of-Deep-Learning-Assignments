@@ -44,10 +44,6 @@ To execute the program in Google Colab one can click on the run cell option.
  
 # Sequence to Sequence Model Construction #
 ## train() ##
-| Parameters | Description                                                                                                                                                                |
-|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| use_wandb  | Accepts a boolean True or boolean False. Deafult value set to True. Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. |
-
 Currently, the hyperparameters have been set to the best configurations we obtained during our experiments.
 
 Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
@@ -55,6 +51,15 @@ Once the model taining is complete we find the validation accuracy and report th
 We randomly choose 10 inputs from our test data and generate a 3*3 attention heatmaps on the same.
 
 We then perform a [connectivity visualisation](https://distill.pub/2019/memorization-in-rnns/#appendix-autocomplete) for the predictions made by our model. Currently, the connectivity visualisation can be performed on any three romanised words. For example: here we have chosen `doctor`, `prayogshala` and `angarakshak` for the purpose of visualisation.
+
+
+| Parameters | Description                                                                                                                                                                |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| use_wandb  | Accepts a boolean True or boolean False. Deafult value set to True. Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. |
+
+Example:
+* To use wandb: wandb.agent("<sweep_id>",train) (sample sweep id: "utsavdey/attention-seq-to-seq/w8pglu2i")
+* To train without want wandb: train(use_wandb=False)
 
 ## inference_model() ##
 The inference_model() is similar to the train_every_step(). Here the only difference is that we don't use [teacher forcing](https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/). 
