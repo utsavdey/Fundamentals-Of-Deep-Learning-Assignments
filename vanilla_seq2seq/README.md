@@ -41,6 +41,9 @@ A typical sequence of method calling is shown below. Here we are sequence when w
 -----------------------------------------------------
 As shown below manual training takes in a object of 'configuration' class.
 
+Set wb=False
+
+
 config=configuration('LSTM',32,512,3,2,.3,20,64)
 manual_train(config)
 
