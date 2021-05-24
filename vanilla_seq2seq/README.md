@@ -18,7 +18,7 @@ Easiest way to try this code out is
 |---|-----------------|----------------------------------------------------------------------------------------------------------------------|
 | 1 | data            | Prepare the data by padding the output and then tokenizing it .                                                      |
 | 2 | build_model     | Create a model without compiling , as required by parameters.                                                        |
-| 3 | build_inference | Modifies our trained model to build a model that is capable of inferencing                                           |
+| 3 | build_inference | Modifies our trained model to build a model that is capable of decoding given input.                                          |
 | 4 | decode_batch    | It is used to decode batch of inputs using inference model                                                           |
 | 5 | test_accuracy   | Returns the accuracy of the model using test data. Also generates file contaiing succesful prediciton and failures.  |
 | 6 | batch_validate  | Returns the accuracy of the model using validation data                                                              |
