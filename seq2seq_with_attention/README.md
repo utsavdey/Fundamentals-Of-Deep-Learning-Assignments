@@ -39,8 +39,8 @@ To execute the program in Google Colab one can click on the run cell option.
  * [Generate](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#generate_inputs) random number(=**n_test_samples**) of test inputs to evaluate the model performance.
    * [Predict](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#transliterate) the target word for each of the test inputs.
    * Generate the [attention heatmap](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#plot_attention). This shows which segments of the input word(ENGLISH) takes the model's attention while predicting the target word(HINDI).
-   * Statically visualise the RNN Type ('RNN', 'LSTM', 'GRU') activations.
-   * Perform connectivity visualisation to understand which is the input(ENGLISH) character that the sequence to sequence model is looking at while decoding the i<sup>th</sup> character in the output(a HINDI character).
+   * [Statically visualise](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#visualize) the RNN Type ('RNN', 'LSTM', 'GRU') activations.
+   * Perform [connectivity visualisation](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#connectivity) to understand which is the input(ENGLISH) character that the sequence to sequence model is looking at while decoding the i<sup>th</sup> character in the output(a HINDI character).
  
 # Sequence to Sequence Model Construction #
 ## train() ##
@@ -92,6 +92,7 @@ It creates a folder ***prediction_attention*** with a sub-folder folder_name whe
 **Example:**</br>
 ![Output_without_heatmap](https://user-images.githubusercontent.com/37553488/119277211-e53cee00-bc3b-11eb-9309-1fcf59ae18d0.png)
 
+## connectivity() ##
 `connectivity()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
 
 | Parameters | Description                                                                                                                                                       |
@@ -100,6 +101,7 @@ It creates a folder ***prediction_attention*** with a sub-folder folder_name whe
 | rnn_type   | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'.                                             |
 | file_path  | Accepts a string as input. Here we pass the file location where we want to store the connectivity visualisation. The visualisation is stored with the file name: [connectivity.html](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/connectivity.html)   |
 
+## create_file() ##
 `create_file()` is used to create and store the connectivity.html file in the specified  location.
 
 | Parameters  | Description                                                                                                                                                       |
