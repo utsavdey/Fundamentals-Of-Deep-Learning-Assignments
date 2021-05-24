@@ -40,8 +40,10 @@ A typical sequence of method calling is shown below. Here we are sequence when w
 # Training without WandB #
 -----------------------------------------------------
 As shown below manual training takes in a object of 'configuration' class.
+
 config=configuration('LSTM',32,512,3,2,.3,20,64)
 manual_train(config)
+
 - Argument 1 : Cell Type
 - Argument 2 : Embedding Dimension
 - Argument 3 : Hidden Units
