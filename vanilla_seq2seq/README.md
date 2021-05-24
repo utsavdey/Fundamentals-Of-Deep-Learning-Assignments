@@ -25,3 +25,7 @@ Accuracy on test dataset= 34.00%
 | 6 | batch_validate  | Returns the accuracy of the model using validation data                                                              |
 | 7 | train           | Train using configs sent by wandb.                                                                                   |
 | 8 | manual_train    | Train using our custom configs.                                                                                      |
+
+
+# Ackonledgement #
+1. Course slides of CS6910 course by Prof. Mithesh Khapra
