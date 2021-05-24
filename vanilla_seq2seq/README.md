@@ -56,6 +56,12 @@ manual_train(config)
 - Argument 7 : Epochs
 - Argument 8 : Batch Size
 
+# Training with WandB #
+-------------------------------------------------------
+Set wb=True
+
+And provide your sweep ID.
+
 # Best Model #
 ----------------------------------------------------
 ![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
