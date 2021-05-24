@@ -64,6 +64,12 @@ The inference_model() is similar to the train_every_step(). Here the only differ
 
 It takes a transliterated romanized word as input and produces the corresponding indic language word( here 'Hindi').
 
+| Parameters | Description                                                                                                           |
+|------------|-----------------------------------------------------------------------------------------------------------------------|
+| input_word | Accepts string as input. Here we pass the transliterated roman word.                                                  |
+| rnn_type   | Accepts string as input. Here we pass the type of RNN being used. The acceptable values are 'RNN', 'LSTM', and 'GRU'. |
+
+
 ## validate() ##
 `validate(path_to_file,folder_name)`: Finds the accuracy of the model on the test and validation dataset. 
 
@@ -127,6 +133,14 @@ It creates a folder ***prediction_attention*** with a sub-folder folder_name whe
 | n_test_samples | Accepts an integer as input. Here we pass number of test inputs to be used for the heatmap generation. Default value is set to 10. |
 
 
+## plot_attention() ##
+`plot_attention()`: Responsible for the attention heatmap creation.
+| Parameters     | Description                                                                                       |
+|----------------|---------------------------------------------------------------------------------------------------|
+| attention      | Accepts a list of attention weights learnt during the model inference for the test input.         |
+| input_word     | Accepts string as input. Here we pass the input word (English word).                              |
+| predicted_word | Accepts a string as input. Here we pass the prediction made by inference model.                   |
+| file_name      | Accepts a string as input. Here we pass the path of the file where we want to store the heatmap.  |
 
 
 ## How to debug the code? ##
