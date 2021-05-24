@@ -9,3 +9,10 @@ Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google C
 
 Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/vanilla_seq2seq) to know more about vanilla_seq2seq without attention.</br>
 Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/seq2seq_with_attention) to know more about seq2seq with attention network.
+
+# Further Enhancements: #
+* Evaluate and experiment with our model and code for different datasets. 
+* Perform training on a larger dataset.
+
+# **NOTE:** 
+The code implemented for both [vanilla sequence to sequence](https://github.com/utsavdey/cs6910_assignment3/blob/main/vanilla_seq2seq/Vanilla_Seq_to_Seq.ipynb) and [sequence to sequence with attention](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/seq2seq_with_attention.ipynb) can be used on any other indian language from the [Dakshina dataset](https://github.com/google-research-datasets/dakshina) by replacing the hi by the language of your choice while setting the train, dev, test set path from the folder **dakshina_dataset_v1.0/hi/lexicons/**.
