@@ -1,6 +1,6 @@
-# Assignment 3: Use recurrent neural networks to build a transliteration system.
+# Vanilla Seq-to-Seq
 ----------------------------------------------------
-In this project we implement a model sequence to sequence learning problems using Recurrent Neural Networks, compare different cells such as vanilla RNN, LSTM and GRU, implement attention networks to overcome the limitations of vanilla seq2seq model and visualise the interactions between different components in an RNN based model. We use wandb for hyper parameter configuration using the validation dataset and visualisation of test data. We have performed a large number of experiments to make meaningful inferences and get to our best model.
+In this sub part of Assignment 3 we have implemented the Encoder-Decoder model without the attention. Multiple layers of encoder and multiple layer of decoder can be added in module.
 
 # Set up and Installation: #
 ----------------------------------------------------
