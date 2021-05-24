@@ -33,11 +33,12 @@ To execute the program in Google Colab one can click on the run cell option.
    * Every target word and input word(translitereated roman word) is appended with a **Start of Sequence Character** ***'\t'*** and **End of Sequence Character** ***'\n'***.
    * We create a dictionary of all the unique characters in the training dataset for both the input language(ENGLISH: inp_lang) and the target language(HINDI: targ_lang).
    * The pairs [HINDI, ENGLISH] of target word and input word(translitereated roman word) are fed into target_tensor_train and input_tensor_train respectively.
- * Begin training.
-   * Log the train loss and validation accuracy if [wandb is being used](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#note).
- * Report the test accuracy after the completion of the model training.
- * Generate random number(=**n_test_samples**) of test inputs to evaluate the model performance.
-   * Generate the attention heatmap. This shows which segments of the input word(ENGLISH) takes the model's attention while predicting the target word(HINDI).
+ * Begin [training](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#train).
+   * Log the train loss and [validation accuracy](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#validate) if [wandb is being used](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#note).
+ * Report the [test accuracy](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#validate) after the completion of the model training.
+ * [Generate](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#generate_inputs) random number(=**n_test_samples**) of test inputs to evaluate the model performance.
+   * [Predict](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#transliterate) the target word for each of the test inputs.
+   * Generate the [attention heatmap](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#plot_attention). This shows which segments of the input word(ENGLISH) takes the model's attention while predicting the target word(HINDI).
    * Statically visualise the RNN Type ('RNN', 'LSTM', 'GRU') activations.
    * Perform connectivity visualisation to understand which is the input(ENGLISH) character that the sequence to sequence model is looking at while decoding the i<sup>th</sup> character in the output(a HINDI character).
  
