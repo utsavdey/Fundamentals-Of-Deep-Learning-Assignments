@@ -8,10 +8,6 @@ Easiest way to try this code out is :-
 2. Upload it to Google Colab
 3. Use the "Run All Cells" option to begin training the best model.
 
-# Best Model #
-----------------------------------------------------
-![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
-
 Accuracy on test dataset= 34.00%
 
 # Methods #
@@ -40,6 +36,12 @@ A typical sequence of method calling is shown below. Here we are sequence when w
 | 6 | batch_validate  | 5                |
 | 7 | train           | -                |
 | 8 | manual_train    | 1                |
+
+
+# Best Model #
+----------------------------------------------------
+![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
+
 # Acknoledgement #
 1. Course slides of CS6910 course by Prof. Mithesh Khapra
 2. [This](https://keras.io/examples/nlp/lstm_seq2seq/)  blog was very helpful in understanding how Seq-to-Seq models are coded in Keras. 
