@@ -5,8 +5,8 @@
 ----------------------------------------------------
 Easiest way to try this code out is :-
 1. Download the .pynb file
-2. Upload it to colab
-3. Run All cells
+2. Upload it to Google Colab
+3. Use the "Run All Cells" to begin training the best model.
 
 # Best Model #
 ----------------------------------------------------
