@@ -14,7 +14,13 @@ Easiest way to try this code out is
 ![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
 
 # Methods #
-----------------------------------------------------
-|   | Method name | Description                                                     |
-|---|-------------|-----------------------------------------------------------------|
-| 1 | data        | Prepare the data by padding the output and then tokenizing it . |
+|   | Method name     | Description                                                     |
+|---|-----------------|-----------------------------------------------------------------|
+| 1 | data            | Prepare the data by padding the output and then tokenizing it . |
+| 2 | build_model     | Build Model                                                     |
+| 3 | build_inference | Build Inference                                                 |
+| 4 | decode_batch    |                                                                 |
+| 5 | test_accuracy   |                                                                 |
+| 6 | batch_validate  |                                                                 |
+| 7 | train           |                                                                 |
+| 8 | manual_train    |                                                                 |
