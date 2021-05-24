@@ -44,7 +44,7 @@ To execute the program in Google Colab one can click on the run cell option.
  
 # Sequence to Sequence Model Construction #
 ## train() ##
-Currently, the hyperparameters have been set to the best configurations we obtained during our experiments.
+Currently, the hyperparameters have been set to the [best configurations](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#best-model-configurations) we obtained during our experiments.
 
 Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
 
