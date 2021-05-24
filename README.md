@@ -11,7 +11,7 @@ Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/vanilla_se
 Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/seq2seq_with_attention) to know more about seq2seq with attention network.
 
 # Wandb Report #
-Visit [here]() for the wandb Report and insightful observations made during the training.
+Visit [here](https://wandb.ai/utsavdey/attention-seq-to-seq/reports/Assignment-3--Vmlldzo3MTc5NDk) for the wandb Report and insightful observations made during the training.
 
 # Further Enhancements #
 * Evaluate and experiment with our model and code for different datasets. 
