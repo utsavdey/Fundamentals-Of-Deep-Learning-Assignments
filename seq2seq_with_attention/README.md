@@ -22,6 +22,8 @@ The hindi font file for displaying hindi characters in the matplotlib plots [her
 
 To run the code using wandb simply **Uncomment** *wandb.agent()* and comment the call to train(). 
 
+Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb.
+
 To execute the program in Google Colab one can click on the run cell option.
 
 # Program Flow #
@@ -39,8 +41,9 @@ To execute the program in Google Colab one can click on the run cell option.
    * Statically visualise the RNN Type ('RNN', 'LSTM', 'GRU') activations.
    * Perform connectivity visualisation to understand which is the input(ENGLISH) character that the sequence to sequence model is looking at while decoding the i<sup>th</sup> character in the output(a HINDI character).
  
-
-Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. Currently, the hyperparameters have been set to the best configurations we obtained during pur experiments.
+# Sequence to Sequence Model Construction #
+## train() ##
+Set ```use_wandb=False``` while calling train function if you do not desire to log results into wandb. Currently, the hyperparameters have been set to the best configurations we obtained during our experiments.
 
 
 Once the model taining is complete we find the validation accuracy and report the test accuracy and create a folder ***prediction_attention*** with a sub-folder having the name of the hyperparameter configuration(= **run_name**) where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
@@ -49,15 +52,16 @@ We randomly choose 10 inputs from our test data and generate a 3*3 attention hea
 
 We then perform a [connectivity visualisation](https://distill.pub/2019/memorization-in-rnns/#appendix-autocomplete) for the predictions made by our model. Currently, the connectivity visualisation can be performed on any three romanised words. For example: here we have chosen `doctor`, `prayogshala` and `angarakshak` for the purpose of visualisation.
 
-
+## inference_model() ##
 The inference_model() is similar to the train_every_step(). Here the only difference is that we don't use [teacher forcing](https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/). 
 
 *   The decoder input at every time step is the prediction that it had made previously along with the hidden state and the encoder output. 
 *   We stop predicting the target word when the model predicts the end token '\n'.
 *   The attention weights obtained at every time step is stored and returned so that it can be used for heatmap generation, visualisation and connectivity exploration.
 
-It takes a transliterated romanized word as input and produces the corresponding indic language word here 'Hindi'.
+It takes a transliterated romanized word as input and produces the corresponding indic language word( here 'Hindi').
 
+## validate() ##
 `validate(path_to_file,folder_name)`: Finds the accuracy of the model on the test and validation dataset. 
 
 It creates a folder ***prediction_attention*** with a sub-folder folder_name where we create two files  `success.txt` and `failure.txt`. These files contain `<input word><space><target word><space><predicted word>` of the successful and failed predictions made by the sequence to sequence to sequence.
@@ -66,6 +70,7 @@ The parameters in validate() are the following:</br>
 **path_to_file**: Accepts parameters of type string. Contains the path to validation or test dataset. from  from the folder dakshina_dataset_v1.0/hi/lexicons/</br>
 **folder_name**: Accepts parameters of type string. This parameter is helpful in creating subfolder inside the prediction_attention folder as per the hyperparamter configurations.
 
+## cisualize() ##
 `visualize()`: Helps to visualise what the sequence to sequence model learns with the help of attention network.
 </br> **Parameters:**
 
@@ -98,6 +103,7 @@ The parameters in validate() are the following:</br>
 
 `get_shade_color(value)`: Returns a specific colour depending the value passed to it. Here the parameter `value` accepts an integer. 
 
+## transliterate() ##
 `transliterate()`: Finds the predicted target word for a given tansliterated roman word, plots the attention heatmap and visualises the LSTM activations if the visual_flag is set to True.
 </br>**Parameters:**
 
@@ -106,6 +112,7 @@ The parameters in validate() are the following:</br>
 **file_path**: Accepts a string as input. Here we pass the file location where we want to store the attention heatmap for the input word and the predicted target word. If not specified the attention heatmaps is stored in the current working directory by the name "attention_heatmap.png"</br>
 **visual_flag**: Accepts a boolean True or boolean False. If the visual_flag is set to true then the code to statically visualise the LSTM activations are called. Default value of the flag is set to "True".
 
+## generate_inputs ##
 `generate_inputs()`: Randomly chooses 10 inputs from the test dataset and calles the transliteration() to produce the predicted target input and heatmaps. It also set the visual_flag in transliteration() to True only for the first test input and False for the rest 9 test inputs.</br>
 **Parameters:**
 
