@@ -42,6 +42,20 @@ A typical sequence of method calling is shown below. Here we are sequence when w
 ----------------------------------------------------
 ![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
 
+# Training without WandB #
+-----------------------------------------------------
+As shown below manual training takes in a object of 'configuration' class.
+config=configuration('LSTM',32,512,3,2,.3,20,64)
+manual_train(config)
+- Argument 1 : Cell Type
+- Argument 2 : Embedding Dimension
+- Argument 3 : Hidden Units
+- Argument 4 : Number of encoder layers
+- Argument 5 : Number of decoder layers
+- Argument 6 : Dropout
+- Argument 7 : Epochs
+- Argument 8 : Batch Size
+
 # Acknoledgement #
 1. Course slides of CS6910 course by Prof. Mithesh Khapra
 2. [This](https://keras.io/examples/nlp/lstm_seq2seq/)  blog was very helpful in understanding how Seq-to-Seq models are coded in Keras. 
