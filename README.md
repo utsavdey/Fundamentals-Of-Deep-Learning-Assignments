@@ -10,6 +10,9 @@ Both vanilla_seq2seq and seq_2_seq_with_attention has been implented in Google C
 Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/vanilla_seq2seq) to know more about vanilla_seq2seq without attention.</br>
 Visit [here](https://github.com/utsavdey/cs6910_assignment3/tree/main/seq2seq_with_attention) to know more about seq2seq with attention network.
 
+# Wandb Report #
+Visit [here]() for the wandb Report and insightful observations made during the training.
+
 # Further Enhancements: #
 * Evaluate and experiment with our model and code for different datasets. 
 * Perform training on a larger dataset.
