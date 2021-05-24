@@ -12,3 +12,6 @@ Easiest way to try this code out is
 # Best Model #
 ----------------------------------------------------
 ![model](https://user-images.githubusercontent.com/12824938/119309723-4b516180-bc8c-11eb-9d5e-4a8781bf6e82.png)
+
+# Methods #
+----------------------------------------------------
