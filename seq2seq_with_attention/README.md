@@ -32,7 +32,7 @@ To execute the program in Google Colab one can click on the run cell option.
    * We create a dictionary of all the unique characters in the training dataset for both the input language(ENGLISH: inp_lang) and the target language(HINDI: targ_lang).
    * The pairs [HINDI, ENGLISH] of target word and input word(translitereated roman word) are fed into target_tensor_train and input_tensor_train respectively.
  * Begin training.
-   * Log the train loss and validation accuracy if wandb is being used.
+   * Log the train loss and validation accuracy if [wandb is being used](https://github.com/utsavdey/cs6910_assignment3/blob/main/seq2seq_with_attention/README.md#note).
  * Report the test accuracy after the completion of the model training.
  * Generate random number(=**n_test_samples**) of test inputs to evaluate the model performance.
    * Generate the attention heatmap. This shows which segments of the input word(ENGLISH) takes the model's attention while predicting the target word(HINDI).
