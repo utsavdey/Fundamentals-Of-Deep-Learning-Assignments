@@ -1,4 +1,4 @@
-# Description:
+# CS6910 Assignments
 
 This repository contains all the solution to problems given in assignments as part of **CS6910: Fundamentals of Deep Learning** course offered by [Dr. Mitesh Khapra](https://www.cse.iitm.ac.in/~miteshk/) at Indian Institute of Technology Madras.
 
@@ -9,4 +9,6 @@ This repository contains all the solution to problems given in assignments as pa
 # Contributors:
 1. Utsav Dey
 2. Arup Das
+
+Made public on 16-July-2021.
 
